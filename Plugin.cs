@@ -32,7 +32,7 @@ public class Plugin : BaseUnityPlugin
     {
         Logger = base.Logger;
         Logger.LogInfo($"hazelify.CustomInfil has loaded!");
-        mapFile = Path.Combine(currentEnv, "BepInEx", "plugins", "CustomInfil", "exfils.json");
+        mapFile = Path.Combine(currentEnv, "BepInEx", "plugins", "hazelify.CustomInfil", "exfils.json");
 
         new ExfiltrationPointPatch().Enable();
 

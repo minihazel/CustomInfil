@@ -64,6 +64,6 @@
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if exist &quot;$(ProjectDir)Build\hazelify.CustomInfil.dll&quot; del /F /Q &quot;$(ProjectDir)Build\hazelify.CustomInfil.dll&quot;&#xD;&#xA;xcopy /Y /D &quot;$(TargetPath)&quot; &quot;..\..\..\BepInEx\plugins\&quot;" />
+    <Exec Command="if exist &quot;$(ProjectDir)Build\hazelify.CustomInfil.dll&quot; del /F /Q &quot;$(ProjectDir)Build\hazelify.CustomInfil.dll&quot;&#xD;&#xA;xcopy /Y /D &quot;$(TargetPath)&quot; &quot;..\..\..\BepInEx\plugins\hazelify.CustomInfil\&quot;" />
   </Target>
 </Project>

@@ -20,11 +20,13 @@ using hazelify.CustomInfil.Patches;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Vector3 = UnityEngine.Vector3;
+using static LocationSettingsClass;
 
 namespace hazelify.CustomInfil.Patches
 {
     public class ExfiltrationPointPatch : ModulePatch
     {
+        public static bool isFinished = false;
         protected override MethodBase GetTargetMethod()
         {
             return AccessTools.Method(typeof(GameWorld), nameof(GameWorld.OnGameStarted));
@@ -67,6 +69,28 @@ namespace hazelify.CustomInfil.Patches
         }
     }
 }
+
+/*
+if (string.IsNullOrEmpty(Plugin.usedExfil.Value.ToString())) return;
+
+JArray current_exfils = (JArray)Plugin.allExfils[currentLoc]["exfils"];
+foreach (JObject xfil in current_exfils)
+{
+    string _Name = xfil["Name"].ToString().ToLower();
+    if (_Name == Plugin.usedExfil.Value.ToLower())
+    {
+        float _X = (float)xfil["X"];
+        float _Y = (float)xfil["Y"];
+        float _Z = (float)xfil["Z"];
+
+        Vector3 newPos = new Vector3(_X, _Y, _Z);
+
+        if (newPos == null) return;
+        player.Teleport(newPos, true);
+        break;
+    }
+}
+*/
 
 /*
 ExfiltrationPoint[] exfils = player.Side == EPlayerSide.Savage
