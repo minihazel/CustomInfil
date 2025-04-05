@@ -32,14 +32,9 @@ namespace hazelify.CustomInfil.Patches
         [PatchPostfix]
         private static void PatchPostfix(ref Player __instance)
         {
-            Logger.LogInfo("1");
             if (__instance == null) return;
-            Logger.LogInfo("2");
             var gameWorld = Singleton<GameWorld>.Instance;
-            Logger.LogInfo("2.5");
             Player player = gameWorld.MainPlayer;
-            Logger.LogInfo("3");
-            bool exfilFound = false;
 
             if (gameWorld.LocationId == null)
             {
@@ -48,11 +43,10 @@ namespace hazelify.CustomInfil.Patches
                 return;
             }
 
-            Logger.LogInfo("4");
             string selectedExfil = null;
-            Logger.LogInfo("5");
+            string translatedInternalSelectedExfil = null;
             string currentLoc = gameWorld.LocationId.ToString().ToLower();
-            Logger.LogInfo("6");
+
             switch (currentLoc)
             {
                 case "factory4_day":
@@ -90,25 +84,18 @@ namespace hazelify.CustomInfil.Patches
                     break;
             }
 
-            Logger.LogInfo("7");
+            // CODE ACTUALLY STARTS HERE
+            translatedInternalSelectedExfil = ExfilLookup.GetInternalName(currentLoc, selectedExfil);
             var exfilController = gameWorld.ExfiltrationController;
             var side = player.Side;
             List<ExfiltrationPoint> points = [];
-            Logger.LogInfo("10");
-            // CODE ACTUALLY STARTS HERE
             JArray currentMap = (JArray)Plugin.spawnpointsObj[currentLoc];
-            Logger.LogInfo("11");
             JObject closestSpawn = null;
-            Logger.LogInfo("12");
 
             string detectedExfilName = null;
-            Logger.LogInfo("13");
             Vector3 currentExfilPosition = Vector3.zero;
-            Logger.LogInfo("14");
             Vector3 spawnpoint_vec = Vector3.zero;
-            Logger.LogInfo("15");
             float closestDistance = float.MaxValue;
-            Logger.LogInfo("16");
 
             switch (player.Side)
             {
@@ -123,101 +110,75 @@ namespace hazelify.CustomInfil.Patches
 
             foreach (var foundExfil in points)
             {
-                Logger.LogInfo("17");
                 string _Name = foundExfil.Settings.Name.ToString();
                 string _Id = foundExfil.Settings.Id.ToString();
-                Logger.LogInfo("18");
 
                 List<string> currentMapExfils = Plugin.GetExfilList(currentLoc);
-                Logger.LogInfo("19");
                 if (currentMapExfils.Contains(_Name))
                 {
-                    Logger.LogInfo("20");
-                    if (string.IsNullOrEmpty(selectedExfil)) return;
-
-                    Logger.LogInfo("21");
-                    if (selectedExfil.StartsWith(_Name))
+                    if (string.IsNullOrEmpty(translatedInternalSelectedExfil)) return;
+                    if (_Name == translatedInternalSelectedExfil)
                     {
-                        Logger.LogInfo("22");
                         float _X = foundExfil.transform.position.x;
                         float _Y = foundExfil.transform.position.y;
                         float _Z = foundExfil.transform.position.z;
 
-                        Logger.LogInfo("23");
                         currentExfilPosition = new Vector3(_X, _Y, _Z);
-                        Logger.LogInfo("24");
                         detectedExfilName = _Name.ToString();
-                        Logger.LogInfo("25");
                         break;
                     }
                 }
             }
 
-            Logger.LogInfo("26");
             foreach (JObject spawnPoint in currentMap)
             {
-                Logger.LogInfo("27");
                 string spawnName = (string)spawnPoint["Name"];
 
-                Logger.LogInfo("28");
                 spawnpoint_vec = new Vector3(
                     (float)spawnPoint["coord_X"],
                     (float)spawnPoint["coord_Y"],
                     (float)spawnPoint["coord_Z"]);
 
-                Logger.LogInfo("29");
                 float distance = Vector3.Distance(currentExfilPosition, spawnpoint_vec);
 
-                Logger.LogInfo("30");
                 if (distance < closestDistance)
                 {
-                    Logger.LogInfo("31");
                     closestDistance = distance;
                     closestSpawn = spawnPoint;
                 }
-                Logger.LogInfo("32");
             }
 
-            Logger.LogInfo("33");
             if (closestSpawn == null)
             {
-                Logger.LogInfo("34");
                 Plugin.logIssue("[CustomInfil] `ClosestSpawn` JObject was null", true);
                 return;
             }
 
-            Logger.LogInfo("35");
             Vector3 coords = new Vector3(
                 (float)closestSpawn["coord_X"],
                 (float)closestSpawn["coord_Y"],
                 (float)closestSpawn["coord_Z"]);
 
-            Logger.LogInfo("36");
             Vector2 rotation = new Vector2(
                 (float)closestSpawn["Rotation_X"],
                 (float)closestSpawn["Rotation_Z"]);
 
-            Logger.LogInfo("37");
             if (coords == null)
             {
-                Logger.LogInfo("38");
                 Plugin.logIssue("[CustomInfil] Closest spawn coordinates were null", true);
                 return;
             }
             if (rotation == null)
             {
-                Logger.LogInfo("39");
                 Plugin.logIssue("[CustomInfil] Closest spawn rotation was null", true);
                 return;
             }
 
-            Logger.LogInfo("40");
             string currentExfilCoords =
                 " X: " + currentExfilPosition.x.ToString() +
                 " Y: " +currentExfilPosition.y.ToString() +
                 " Z: " + currentExfilPosition.z.ToString();
 
-            Logger.LogInfo("41");
             try
             {
                 player.Teleport(coords, true);
@@ -228,7 +189,6 @@ namespace hazelify.CustomInfil.Patches
                 Plugin.logIssue("[CustomInfil] Player Teleport error: " + ex.Message.ToString(), true);
             }
 
-            Logger.LogInfo("42");
             try
             {
                 player.Rotation = rotation;
