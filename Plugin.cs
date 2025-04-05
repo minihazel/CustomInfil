@@ -152,11 +152,31 @@ public class Plugin : BaseUnityPlugin
             "Toggle if the mod should act during spawn or not.");
 
         Factory_Exfils.SettingChanged += OnExfilsSettingChanged;
+        GZ_Exfils.SettingChanged += OnExfilsSettingChanged;
+        Interchange_Exfils.SettingChanged += OnExfilsSettingChanged;
+        Shoreline_Exfils.SettingChanged += OnExfilsSettingChanged;
+        Woods_Exfils.SettingChanged += OnExfilsSettingChanged;
+        Reserve_Exfils.SettingChanged += OnExfilsSettingChanged;
+        Lighthouse_Exfils.SettingChanged += OnExfilsSettingChanged;
+        Labs_Exfils.SettingChanged += OnExfilsSettingChanged;
+        Customs_Exfils.SettingChanged += OnExfilsSettingChanged;
+        Streets_Exfils.SettingChanged += OnExfilsSettingChanged;
     }
 
     private void OnExfilsSettingChanged(object sender, EventArgs e)
     {
+        if (sender is ConfigEntry<string> entry &&
+        entry.Description.AcceptableValues is AcceptableValueList<string> valueList)
+        {
+            var current = entry.Value;
+            int index = Array.IndexOf(valueList.AcceptableValues, current);
 
+            // If it's a category marker like ↓ PMC EXFILS ↓, select the one below it
+            if (current.StartsWith("↓") && index + 1 < valueList.AcceptableValues.Length)
+            {
+                entry.Value = valueList.AcceptableValues[index + 1];
+            }
+        }
     }
 
     public void readSpawnpointsFile()

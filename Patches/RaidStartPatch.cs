@@ -18,6 +18,7 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using System.Numerics;
 using System.Collections.Generic;
+using BepInEx.Configuration;
 
 namespace hazelify.CustomInfil.Patches
 {
@@ -43,51 +44,175 @@ namespace hazelify.CustomInfil.Patches
                 return;
             }
 
+            int currentIndex = 0;
+            int pmcIndex = 0;
+            int scavIndex = 0;
+
             string selectedExfil = null;
             string translatedInternalSelectedExfil = null;
             string currentLoc = gameWorld.LocationId.ToString().ToLower();
+            var exfilController = gameWorld.ExfiltrationController;
+            var side = player.Side;
 
             switch (currentLoc)
             {
                 case "factory4_day":
-                    selectedExfil = Regex.Replace(Plugin.Factory_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    selectedExfil = Plugin.Factory_Exfils.Value.ToString();
+                    currentIndex = ExfilDescData.factory4_day.IndexOf(selectedExfil);
+                    pmcIndex  = ExfilDescData.factory4_day.IndexOf("↓ PMC EXFILS ↓");
+                    scavIndex = ExfilDescData.factory4_day.IndexOf("↓ PMC SCAV ↓");
+
+                    if (side == EPlayerSide.Savage && currentIndex < scavIndex)
+                    {
+                        Plugin.Factory_Exfils.Value = ExfilDescData.factory4_day[scavIndex + 1];
+                    }
+                    else if (side == EPlayerSide.Bear || side == EPlayerSide.Usec && currentIndex > scavIndex)
+                    {
+                        Plugin.Factory_Exfils.Value = ExfilDescData.factory4_day[pmcIndex + 1];
+                    }
                     break;
                 case "factory4_night":
-                    selectedExfil = Regex.Replace(Plugin.Factory_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    selectedExfil = Plugin.Factory_Exfils.Value.ToString();
+                    currentIndex = ExfilDescData.factory4_night.IndexOf(selectedExfil);
+                    pmcIndex = ExfilDescData.factory4_night.IndexOf("↓ PMC EXFILS ↓");
+                    scavIndex = ExfilDescData.factory4_night.IndexOf("↓ PMC SCAV ↓");
+
+                    if (side == EPlayerSide.Savage && currentIndex < scavIndex)
+                    {
+                        Plugin.Factory_Exfils.Value = ExfilDescData.factory4_night[scavIndex + 1];
+                    }
+                    else if (side == EPlayerSide.Bear || side == EPlayerSide.Usec && currentIndex > scavIndex)
+                    {
+                        Plugin.Factory_Exfils.Value = ExfilDescData.factory4_night[pmcIndex + 1];
+                    }
                     break;
                 case "bigmap":
-                    selectedExfil = Regex.Replace(Plugin.Customs_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    selectedExfil = Plugin.Customs_Exfils.Value.ToString();
+                    currentIndex = ExfilDescData.bigmap.IndexOf(selectedExfil);
+                    pmcIndex = ExfilDescData.bigmap.IndexOf("↓ PMC EXFILS ↓");
+                    scavIndex = ExfilDescData.bigmap.IndexOf("↓ PMC SCAV ↓");
+
+                    if (side == EPlayerSide.Savage && currentIndex < scavIndex)
+                    {
+                        Plugin.Customs_Exfils.Value = ExfilDescData.bigmap[scavIndex + 1];
+                    }
+                    else if (side == EPlayerSide.Bear || side == EPlayerSide.Usec && currentIndex > scavIndex)
+                    {
+                        Plugin.Customs_Exfils.Value = ExfilDescData.bigmap[pmcIndex + 1];
+                    }
                     break;
                 case "sandbox":
-                    selectedExfil = Regex.Replace(Plugin.GZ_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    selectedExfil = Plugin.GZ_Exfils.Value.ToString();
+                    currentIndex = ExfilDescData.sandbox.IndexOf(selectedExfil);
+                    pmcIndex = ExfilDescData.sandbox.IndexOf("↓ PMC EXFILS ↓");
+                    scavIndex = ExfilDescData.sandbox.IndexOf("↓ PMC SCAV ↓");
+
+                    if (side == EPlayerSide.Savage && currentIndex < scavIndex)
+                    {
+                        Plugin.GZ_Exfils.Value = ExfilDescData.sandbox[scavIndex + 1];
+                    }
+                    else if (side == EPlayerSide.Bear || side == EPlayerSide.Usec && currentIndex > scavIndex)
+                    {
+                        Plugin.GZ_Exfils.Value = ExfilDescData.sandbox[pmcIndex + 1];
+                    }
                     break;
                 case "rezervbase":
-                    selectedExfil = Regex.Replace(Plugin.Reserve_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    selectedExfil = Plugin.Reserve_Exfils.Value.ToString();
+                    currentIndex = ExfilDescData.rezervbase.IndexOf(selectedExfil);
+                    pmcIndex = ExfilDescData.rezervbase.IndexOf("↓ PMC EXFILS ↓");
+                    scavIndex = ExfilDescData.rezervbase.IndexOf("↓ PMC SCAV ↓");
+
+                    if (side == EPlayerSide.Savage && currentIndex < scavIndex)
+                    {
+                        Plugin.Reserve_Exfils.Value = ExfilDescData.rezervbase[scavIndex + 1];
+                    }
+                    else if (side == EPlayerSide.Bear || side == EPlayerSide.Usec && currentIndex > scavIndex)
+                    {
+                        Plugin.Reserve_Exfils.Value = ExfilDescData.rezervbase[pmcIndex + 1];
+                    }
                     break;
                 case "lighthouse":
-                    selectedExfil = Regex.Replace(Plugin.Lighthouse_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    selectedExfil = Plugin.Lighthouse_Exfils.Value.ToString();
+                    currentIndex = ExfilDescData.lighthouse.IndexOf(selectedExfil);
+                    pmcIndex = ExfilDescData.lighthouse.IndexOf("↓ PMC EXFILS ↓");
+                    scavIndex = ExfilDescData.lighthouse.IndexOf("↓ PMC SCAV ↓");
+
+                    if (side == EPlayerSide.Savage && currentIndex < scavIndex)
+                    {
+                        Plugin.Lighthouse_Exfils.Value = ExfilDescData.lighthouse[scavIndex + 1];
+                    }
+                    else if (side == EPlayerSide.Bear || side == EPlayerSide.Usec && currentIndex > scavIndex)
+                    {
+                        Plugin.Lighthouse_Exfils.Value = ExfilDescData.lighthouse[pmcIndex + 1];
+                    }
                     break;
                 case "shoreline":
-                    selectedExfil = Regex.Replace(Plugin.Shoreline_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    selectedExfil = Plugin.Shoreline_Exfils.Value.ToString();
+                    currentIndex = ExfilDescData.shoreline.IndexOf(selectedExfil);
+                    pmcIndex = ExfilDescData.shoreline.IndexOf("↓ PMC EXFILS ↓");
+                    scavIndex = ExfilDescData.shoreline.IndexOf("↓ PMC SCAV ↓");
+
+                    if (side == EPlayerSide.Savage && currentIndex < scavIndex)
+                    {
+                        Plugin.Shoreline_Exfils.Value = ExfilDescData.shoreline[scavIndex + 1];
+                    }
+                    else if (side == EPlayerSide.Bear || side == EPlayerSide.Usec && currentIndex > scavIndex)
+                    {
+                        Plugin.Shoreline_Exfils.Value = ExfilDescData.shoreline[pmcIndex + 1];
+                    }
                     break;
                 case "woods":
-                    selectedExfil = Regex.Replace(Plugin.Woods_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    selectedExfil = Plugin.Woods_Exfils.Value.ToString();
+                    currentIndex = ExfilDescData.woods.IndexOf(selectedExfil);
+                    pmcIndex = ExfilDescData.woods.IndexOf("↓ PMC EXFILS ↓");
+                    scavIndex = ExfilDescData.woods.IndexOf("↓ PMC SCAV ↓");
+
+                    if (side == EPlayerSide.Savage && currentIndex < scavIndex)
+                    {
+                        Plugin.Woods_Exfils.Value = ExfilDescData.woods[scavIndex + 1];
+                    }
+                    else if (side == EPlayerSide.Bear || side == EPlayerSide.Usec && currentIndex > scavIndex)
+                    {
+                        Plugin.Woods_Exfils.Value = ExfilDescData.woods[pmcIndex + 1];
+                    }
                     break;
                 case "interchange":
-                    selectedExfil = Regex.Replace(Plugin.Interchange_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    selectedExfil = Plugin.Interchange_Exfils.Value.ToString();
+                    currentIndex = ExfilDescData.interchange.IndexOf(selectedExfil);
+                    pmcIndex = ExfilDescData.interchange.IndexOf("↓ PMC EXFILS ↓");
+                    scavIndex = ExfilDescData.interchange.IndexOf("↓ PMC SCAV ↓");
+
+                    if (side == EPlayerSide.Savage && currentIndex < scavIndex)
+                    {
+                        Plugin.Interchange_Exfils.Value = ExfilDescData.interchange[scavIndex + 1];
+                    }
+                    else if (side == EPlayerSide.Bear || side == EPlayerSide.Usec && currentIndex > scavIndex)
+                    {
+                        Plugin.Interchange_Exfils.Value = ExfilDescData.interchange[pmcIndex + 1];
+                    }
                     break;
                 case "tarkovstreets":
-                    selectedExfil = Regex.Replace(Plugin.Streets_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    selectedExfil = Plugin.Streets_Exfils.Value.ToString();
+                    currentIndex = ExfilDescData.tarkovstreets.IndexOf(selectedExfil);
+                    pmcIndex = ExfilDescData.tarkovstreets.IndexOf("↓ PMC EXFILS ↓");
+                    scavIndex = ExfilDescData.tarkovstreets.IndexOf("↓ PMC SCAV ↓");
+
+                    if (side == EPlayerSide.Savage && currentIndex < scavIndex)
+                    {
+                        Plugin.Streets_Exfils.Value = ExfilDescData.tarkovstreets[scavIndex + 1];
+                    }
+                    else if (side == EPlayerSide.Bear || side == EPlayerSide.Usec && currentIndex > scavIndex)
+                    {
+                        Plugin.Streets_Exfils.Value = ExfilDescData.tarkovstreets[pmcIndex + 1];
+                    }
                     break;
                 case "laboratory":
-                    selectedExfil = Regex.Replace(Plugin.Labs_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    selectedExfil = Plugin.Labs_Exfils.Value.ToString();
                     break;
             }
 
             // CODE ACTUALLY STARTS HERE
             translatedInternalSelectedExfil = ExfilLookup.GetInternalName(currentLoc, selectedExfil);
-            var exfilController = gameWorld.ExfiltrationController;
-            var side = player.Side;
             List<ExfiltrationPoint> points = [];
             JArray currentMap = (JArray)Plugin.spawnpointsObj[currentLoc];
             JObject closestSpawn = null;
