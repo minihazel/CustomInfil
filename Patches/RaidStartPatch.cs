@@ -13,12 +13,17 @@ using static LocationSettingsClass;
 using EFT.Game.Spawning;
 using Quaternion = UnityEngine.Quaternion;
 using Vector2 = UnityEngine.Vector2;
+using System.Linq;
+using System.Text.RegularExpressions;
+using UnityEngine;
+using System.Numerics;
+using System.Collections.Generic;
 
 namespace hazelify.CustomInfil.Patches
 {
     public class RaidStartPatch : ModulePatch
     {
-        public static bool isFinished = false;
+        
         protected override MethodBase GetTargetMethod()
         {
             return AccessTools.Method(typeof(GameWorld), nameof(GameWorld.OnGameStarted));
@@ -27,149 +32,279 @@ namespace hazelify.CustomInfil.Patches
         [PatchPostfix]
         private static void PatchPostfix(ref Player __instance)
         {
-            // source checks
-            if (!Plugin.useLastExfil.Value) return;
+            Logger.LogInfo("1");
             if (__instance == null) return;
-
-            // inverted if checks for ensuring reliability
-            if (!Singleton<GameWorld>.Instantiated) return;
+            Logger.LogInfo("2");
             var gameWorld = Singleton<GameWorld>.Instance;
-            if (gameWorld.LocationId == null) return;
-            string currentLoc = gameWorld.LocationId.ToString().ToLower();
-            if (currentLoc == null) return;
+            Logger.LogInfo("2.5");
             Player player = gameWorld.MainPlayer;
-            if (player == null) return;
+            Logger.LogInfo("3");
+            bool exfilFound = false;
 
-            // actual code
-            if (currentLoc == "factory4_night")
+            if (gameWorld.LocationId == null)
             {
-                double closestDistance = double.MaxValue;
-                JObject closestSpawn = null;
+                Plugin.logIssue("GameWorld location is null", true);
+                Logger.LogInfo("3.5");
+                return;
+            }
 
-                for (int i = 0; i < Plugin.spawnpointsObj.Count; i++)
+            Logger.LogInfo("4");
+            string selectedExfil = null;
+            Logger.LogInfo("5");
+            string currentLoc = gameWorld.LocationId.ToString().ToLower();
+            Logger.LogInfo("6");
+            switch (currentLoc)
+            {
+                case "factory4_day":
+                    selectedExfil = Regex.Replace(Plugin.Factory_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    break;
+                case "factory4_night":
+                    selectedExfil = Regex.Replace(Plugin.Factory_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    break;
+                case "bigmap":
+                    selectedExfil = Regex.Replace(Plugin.Customs_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    break;
+                case "sandbox":
+                    selectedExfil = Regex.Replace(Plugin.GZ_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    break;
+                case "rezervbase":
+                    selectedExfil = Regex.Replace(Plugin.Reserve_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    break;
+                case "lighthouse":
+                    selectedExfil = Regex.Replace(Plugin.Lighthouse_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    break;
+                case "shoreline":
+                    selectedExfil = Regex.Replace(Plugin.Shoreline_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    break;
+                case "woods":
+                    selectedExfil = Regex.Replace(Plugin.Woods_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    break;
+                case "interchange":
+                    selectedExfil = Regex.Replace(Plugin.Interchange_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    break;
+                case "tarkovstreets":
+                    selectedExfil = Regex.Replace(Plugin.Streets_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    break;
+                case "laboratory":
+                    selectedExfil = Regex.Replace(Plugin.Labs_Exfils.Value.ToString(), @"\s*\(.*?\)", "").Trim();
+                    break;
+            }
+
+            Logger.LogInfo("7");
+            var exfilController = gameWorld.ExfiltrationController;
+            var side = player.Side;
+            List<ExfiltrationPoint> points = [];
+            Logger.LogInfo("10");
+            // CODE ACTUALLY STARTS HERE
+            JArray currentMap = (JArray)Plugin.spawnpointsObj[currentLoc];
+            Logger.LogInfo("11");
+            JObject closestSpawn = null;
+            Logger.LogInfo("12");
+
+            string detectedExfilName = null;
+            Logger.LogInfo("13");
+            Vector3 currentExfilPosition = Vector3.zero;
+            Logger.LogInfo("14");
+            Vector3 spawnpoint_vec = Vector3.zero;
+            Logger.LogInfo("15");
+            float closestDistance = float.MaxValue;
+            Logger.LogInfo("16");
+
+            switch (player.Side)
+            {
+                case EPlayerSide.Savage:
+                    points.AddRange(exfilController.ExfiltrationPoints);
+                    points.AddRange(exfilController.ScavExfiltrationPoints);
+                    break;
+                default:
+                    points.AddRange(exfilController.ExfiltrationPoints);
+                    break;
+            }
+
+            foreach (var foundExfil in points)
+            {
+                Logger.LogInfo("17");
+                string _Name = foundExfil.Settings.Name.ToString();
+                string _Id = foundExfil.Settings.Id.ToString();
+                Logger.LogInfo("18");
+
+                List<string> currentMapExfils = Plugin.GetExfilList(currentLoc);
+                Logger.LogInfo("19");
+                if (currentMapExfils.Contains(_Name))
                 {
-                    JObject spawn = Plugin.spawnpointsObj[currentLoc][i] as JObject;
-                    string selectedExfil = Plugin.Factory_Exfils.Value.ToString();
+                    Logger.LogInfo("20");
+                    if (string.IsNullOrEmpty(selectedExfil)) return;
 
-                    float exfil_pos_x = (float)Plugin.allExfils["factory4_day"]["exfils"][i]["X"];
-                    float exfil_pos_y = (float)Plugin.allExfils["factory4_day"]["exfils"][i]["Y"];
-                    float exfil_pos_z = (float)Plugin.allExfils["factory4_day"]["exfils"][i]["Z"];
-
-                    float spawnpoint_pos_x = (float)Plugin.spawnpointsObj["factory4_day"][i]["coord_X"];
-                    float spawnpoint_pos_y = (float)Plugin.spawnpointsObj["factory4_day"][i]["coord_Y"];
-                    float spawnpoint_pos_z = (float)Plugin.spawnpointsObj["factory4_day"][i]["coord_Z"];
-
-                    double distance = Math.Sqrt(
-                        Math.Pow(exfil_pos_x - spawnpoint_pos_x, 2) +
-                        Math.Pow(exfil_pos_y - spawnpoint_pos_y, 2) +
-                        Math.Pow(exfil_pos_z - spawnpoint_pos_z, 2)
-                    );
-
-                    if (distance < closestDistance)
+                    Logger.LogInfo("21");
+                    if (selectedExfil.StartsWith(_Name))
                     {
-                        closestDistance = distance;
-                        closestSpawn = spawn;
+                        Logger.LogInfo("22");
+                        float _X = foundExfil.transform.position.x;
+                        float _Y = foundExfil.transform.position.y;
+                        float _Z = foundExfil.transform.position.z;
+
+                        Logger.LogInfo("23");
+                        currentExfilPosition = new Vector3(_X, _Y, _Z);
+                        Logger.LogInfo("24");
+                        detectedExfilName = _Name.ToString();
+                        Logger.LogInfo("25");
+                        break;
                     }
-                }
-
-                if (closestSpawn == null) return;
-
-                Vector3 coords = new Vector3(
-                    (float)closestSpawn["coord_X"],
-                    (float)closestSpawn["coord_Y"],
-                    (float)closestSpawn["coord_Z"]);
-
-                Vector2 rotation = new Vector2(
-                    (float)closestSpawn["Rotation_X"],
-                    (float)closestSpawn["Rotation_Z"]);
-
-                if (coords == null) return;
-                if (rotation == null) return;
-
-                try
-                {
-                    player.Teleport(coords, true);
-                }
-                catch (Exception ex)
-                {
-                    ConsoleScreen.Log("[CustomInfil] Player Teleport error: " + ex.Message.ToString());
-                }
-
-                try
-                {
-                    player.Rotation = rotation;
-                }
-                catch (Exception ex)
-                {
-                    ConsoleScreen.Log("[CustomInfil] Player Rotation error: " + ex.Message.ToString());
                 }
             }
-            else
+
+            Logger.LogInfo("26");
+            foreach (JObject spawnPoint in currentMap)
             {
-                double closestDistance = double.MaxValue;
-                JObject closestSpawn = null;
+                Logger.LogInfo("27");
+                string spawnName = (string)spawnPoint["Name"];
 
-                for (int i = 0; i < Plugin.spawnpointsObj.Count; i++)
+                Logger.LogInfo("28");
+                spawnpoint_vec = new Vector3(
+                    (float)spawnPoint["coord_X"],
+                    (float)spawnPoint["coord_Y"],
+                    (float)spawnPoint["coord_Z"]);
+
+                Logger.LogInfo("29");
+                float distance = Vector3.Distance(currentExfilPosition, spawnpoint_vec);
+
+                Logger.LogInfo("30");
+                if (distance < closestDistance)
                 {
-                    JObject spawn = Plugin.spawnpointsObj[currentLoc][i] as JObject;
-                    string selectedExfil = Plugin.Factory_Exfils.Value.ToString();
-
-                    float exfil_pos_x = (float)Plugin.allExfils[currentLoc]["exfils"][i]["X"];
-                    float exfil_pos_y = (float)Plugin.allExfils[currentLoc]["exfils"][i]["Y"];
-                    float exfil_pos_z = (float)Plugin.allExfils[currentLoc]["exfils"][i]["Z"];
-
-                    float spawnpoint_pos_x = (float)Plugin.spawnpointsObj[currentLoc][i]["coord_X"];
-                    float spawnpoint_pos_y = (float)Plugin.spawnpointsObj[currentLoc][i]["coord_Y"];
-                    float spawnpoint_pos_z = (float)Plugin.spawnpointsObj[currentLoc][i]["coord_Z"];
-
-                    double distance = Math.Sqrt(
-                        Math.Pow(exfil_pos_x - spawnpoint_pos_x, 2) +
-                        Math.Pow(exfil_pos_y - spawnpoint_pos_y, 2) +
-                        Math.Pow(exfil_pos_z - spawnpoint_pos_z, 2)
-                    );
-
-                    if (distance < closestDistance)
-                    {
-                        closestDistance = distance;
-                        closestSpawn = spawn;
-                    }
+                    Logger.LogInfo("31");
+                    closestDistance = distance;
+                    closestSpawn = spawnPoint;
                 }
+                Logger.LogInfo("32");
+            }
 
-                if (closestSpawn == null) return;
+            Logger.LogInfo("33");
+            if (closestSpawn == null)
+            {
+                Logger.LogInfo("34");
+                Plugin.logIssue("[CustomInfil] `ClosestSpawn` JObject was null", true);
+                return;
+            }
 
-                Vector3 coords = new Vector3(
-                    (float)closestSpawn["coord_X"],
-                    (float)closestSpawn["coord_Y"],
-                    (float)closestSpawn["coord_Z"]);
+            Logger.LogInfo("35");
+            Vector3 coords = new Vector3(
+                (float)closestSpawn["coord_X"],
+                (float)closestSpawn["coord_Y"],
+                (float)closestSpawn["coord_Z"]);
 
-                Vector2 rotation = new Vector2(
-                    (float)closestSpawn["Rotation_X"],
-                    (float)closestSpawn["Rotation_Z"]);
+            Logger.LogInfo("36");
+            Vector2 rotation = new Vector2(
+                (float)closestSpawn["Rotation_X"],
+                (float)closestSpawn["Rotation_Z"]);
 
-                if (coords == null) return;
-                if (rotation == null) return;
+            Logger.LogInfo("37");
+            if (coords == null)
+            {
+                Logger.LogInfo("38");
+                Plugin.logIssue("[CustomInfil] Closest spawn coordinates were null", true);
+                return;
+            }
+            if (rotation == null)
+            {
+                Logger.LogInfo("39");
+                Plugin.logIssue("[CustomInfil] Closest spawn rotation was null", true);
+                return;
+            }
 
-                try
-                {
-                    player.Teleport(coords, true);
-                }
-                catch (Exception ex)
-                {
-                    ConsoleScreen.Log("[CustomInfil] Player Teleport error: " + ex.Message.ToString());
-                }
+            Logger.LogInfo("40");
+            string currentExfilCoords =
+                " X: " + currentExfilPosition.x.ToString() +
+                " Y: " +currentExfilPosition.y.ToString() +
+                " Z: " + currentExfilPosition.z.ToString();
 
-                try
-                {
-                    player.Rotation = rotation;
-                }
-                catch (Exception ex)
-                {
-                    ConsoleScreen.Log("[CustomInfil] Player Rotation error: " + ex.Message.ToString());
-                }
+            Logger.LogInfo("41");
+            try
+            {
+                player.Teleport(coords, true);
+                Plugin.logIssue("[CustomInfil] Teleported player successfully to: " + currentExfilCoords + " (" + detectedExfilName + ")", false);
+            }
+            catch (Exception ex)
+            {
+                Plugin.logIssue("[CustomInfil] Player Teleport error: " + ex.Message.ToString(), true);
+            }
+
+            Logger.LogInfo("42");
+            try
+            {
+                player.Rotation = rotation;
+                Plugin.logIssue("[CustomInfil] Rotated player successfully to: " + rotation.ToString(), false);
+            }
+            catch (Exception ex)
+            {
+                Plugin.logIssue("[CustomInfil] Player Rotation error: " + ex.Message.ToString(), true);
             }
         }
     }
 }
+
+// math
+/*
+double closestDistance = double.MaxValue;
+JObject closestSpawn = null;
+
+for (int i = 0; i < Plugin.spawnpointsObj.Count; i++)
+{
+    JObject spawn = Plugin.spawnpointsObj[currentLoc][i] as JObject;
+    string selectedExfil = Plugin.Factory_Exfils.Value.ToString();
+
+    float exfil_pos_x = (float)Plugin.allExfils[currentLoc]["exfils"][i]["X"];
+    float exfil_pos_y = (float)Plugin.allExfils[currentLoc]["exfils"][i]["Y"];
+    float exfil_pos_z = (float)Plugin.allExfils[currentLoc]["exfils"][i]["Z"];
+
+    float spawnpoint_pos_x = (float)Plugin.spawnpointsObj[currentLoc][i]["coord_X"];
+    float spawnpoint_pos_y = (float)Plugin.spawnpointsObj[currentLoc][i]["coord_Y"];
+    float spawnpoint_pos_z = (float)Plugin.spawnpointsObj[currentLoc][i]["coord_Z"];
+
+    double distance = Math.Sqrt(
+        Math.Pow(exfil_pos_x - spawnpoint_pos_x, 2) +
+        Math.Pow(exfil_pos_y - spawnpoint_pos_y, 2) +
+        Math.Pow(exfil_pos_z - spawnpoint_pos_z, 2)
+    );
+
+    if (distance < closestDistance)
+    {
+        closestDistance = distance;
+        closestSpawn = spawn;
+    }
+}
+
+if (closestSpawn == null) return;
+
+Vector3 coords = new Vector3(
+    (float)closestSpawn["coord_X"],
+    (float)closestSpawn["coord_Y"],
+    (float)closestSpawn["coord_Z"]);
+
+Vector2 rotation = new Vector2(
+    (float)closestSpawn["Rotation_X"],
+    (float)closestSpawn["Rotation_Z"]);
+
+if (coords == null) return;
+if (rotation == null) return;
+
+try
+{
+    player.Teleport(coords, true);
+}
+catch (Exception ex)
+{
+    ConsoleScreen.Log("[CustomInfil] Player Teleport error: " + ex.Message.ToString());
+}
+
+try
+{
+    player.Rotation = rotation;
+}
+catch (Exception ex)
+{
+    ConsoleScreen.Log("[CustomInfil] Player Rotation error: " + ex.Message.ToString());
+}
+*/
 
 /*
 JArray currentSpawnpoints = (JArray)Plugin.spawnpointsObj[currentLoc];
@@ -241,7 +376,6 @@ for (int i = 0; i < _spawnPointMarkers.Count; i++)
 ConsoleScreen.Log("[CustomInfil] Logged " + _spawnPointMarkers.Count.ToString() + " spawnpoints to file of location: " + currentLoc);
 */
 
-// currently used
 /*
 if (string.IsNullOrEmpty(Plugin.usedExfil.Value.ToString())) return;
 
@@ -264,6 +398,7 @@ foreach (JObject xfil in current_exfils)
 }
 */
 
+// currently used
 /*
 ExfiltrationPoint[] exfils = player.Side == EPlayerSide.Savage
     ? gameWorld.ExfiltrationController.ScavExfiltrationPoints
@@ -305,4 +440,128 @@ for (int i = 0; i < pmcExfils.Length; i++)
 
 if (isFinished)
     ConsoleScreen.Log("[LastInfil] Map " + location + " saved to exfils.json");
+*/
+
+/*
+    float closestDistance = float.MaxValue;
+    Logger.LogInfo("3");
+    ConsoleScreen.Log(selectedExfil);
+    Logger.LogInfo(selectedExfil);
+    JArray currentMap = (JArray)Plugin.spawnpointsObj[currentLoc];
+    Logger.LogInfo("4");
+
+    JObject closestSpawn = null;
+
+    Vector3 exfil_vec = Vector3.zero;
+    Vector3 spawnpoint_vec = Vector3.zero;
+
+    foreach (JObject exfil in available_exfils)
+    {
+        Logger.LogInfo("8");
+        if ((string)exfil["Name"] == selectedExfil)
+        {
+            exfil_vec = new Vector3(
+                (float)exfil["X"],
+                (float)exfil["Y"],
+                (float)exfil["Z"]);
+            Logger.LogInfo("X " + (string)exfil["X"] +
+                            "Y" + (string)exfil["Y"] +
+                            "Z" + (string)exfil["Z"]);
+            ConsoleScreen.Log("X " + (string)exfil["X"] +
+                            "Y" + (string)exfil["Y"] +
+                            "Z" + (string)exfil["Z"]);
+        }
+        Logger.LogInfo("9");
+        break;
+    }
+
+    Logger.LogInfo("10");
+    foreach (JObject spawnPoint in currentMap)
+    {
+        Logger.LogInfo("11");
+        string spawnName = (string)spawnPoint["Name"];
+
+        spawnpoint_vec = new Vector3(
+            (float)spawnPoint["coord_X"],
+            (float)spawnPoint["coord_Y"],
+            (float)spawnPoint["coord_Z"]);
+        Logger.LogInfo("X " + (float)spawnPoint["coord_X"] +
+                            "Y" + (float)spawnPoint["coord_Y"] +
+                            "Z" + (float)spawnPoint["coord_Z"]);
+
+        ConsoleScreen.Log("X " + (float)spawnPoint["coord_X"] +
+                            "Y" + (float)spawnPoint["coord_Y"] +
+                            "Z" + (float)spawnPoint["coord_Z"]);
+
+        Logger.LogInfo("12");
+        float distance = Vector3.Distance(exfil_vec, spawnpoint_vec);
+        // distance from exfil center to spawnpoint
+                
+        if (distance < closestDistance)
+        {
+            // if distance from exfil center to spawnpoint is shorter
+            closestDistance = distance;
+            closestSpawn = spawnPoint;
+        }
+        else if (distance == closestDistance)
+        {
+            // if distance from exfil to spawnpoint is the same as previously
+            closestSpawn = spawnPoint;
+        }
+    }
+
+    Logger.LogInfo("13");
+    if (closestSpawn != null)
+    {
+        Logger.LogInfo("15");
+        Logger.LogInfo(closestSpawn.ToString());
+        Vector3 coords = new Vector3(
+            (float)closestSpawn["coord_X"],
+            (float)closestSpawn["coord_Y"],
+            (float)closestSpawn["coord_Z"]);
+        Logger.LogInfo("16");
+
+        Vector2 rotation = new Vector2(
+            (float)closestSpawn["Rotation_X"],
+            (float)closestSpawn["Rotation_Z"]);
+        Logger.LogInfo("17");
+
+        if (coords == null) return;
+        Logger.LogInfo("18");
+        if (rotation == null) return;
+        Logger.LogInfo("19");
+
+        try
+        {
+            Logger.LogInfo("20");
+            player.Teleport(coords, true);
+            ConsoleScreen.Log("[CustomInfil] Teleported player successfully to: " + selectedExfil);
+            Logger.LogInfo("21");
+        }
+        catch (Exception ex)
+        {
+            ConsoleScreen.Log("[CustomInfil] Player Teleport error: " + ex.Message.ToString());
+            Logger.LogError("[CustomInfil] Player Teleport error: " + ex.Message.ToString());
+        }
+
+        try
+        {
+            Logger.LogInfo("22");
+            player.Rotation = rotation;
+            ConsoleScreen.Log("[CustomInfil] Rotated player successfully to: " + rotation.ToString());
+            Logger.LogInfo("23");
+        }
+        catch (Exception ex)
+        {
+            ConsoleScreen.Log("[CustomInfil] Player Rotation error: " + ex.Message.ToString());
+            Logger.LogError("[CustomInfil] Player Rotation error: " + ex.Message.ToString());
+        }
+    }
+    else
+    {
+        Logger.LogInfo("14");
+        ConsoleScreen.Log("`closestSpawn` variable is null, aborting");
+        Logger.LogError("`closestSpawn` variable is null, aborting");
+        return;
+    }
 */

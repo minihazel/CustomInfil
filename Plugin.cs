@@ -1,6 +1,8 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using EFT.UI;
+using hazelify.CustomInfil;
 using hazelify.CustomInfil.Patches;
 using Newtonsoft.Json.Linq;
 using System;
@@ -21,29 +23,16 @@ public class Plugin : BaseUnityPlugin
     public static ConfigEntry<string> GZ_Exfils;
     public static ConfigEntry<string> Interchange_Exfils;
     public static ConfigEntry<string> Shoreline_Exfils;
+    public static ConfigEntry<string> Woods_Exfils;
     public static ConfigEntry<string> Reserve_Exfils;
     public static ConfigEntry<string> Lighthouse_Exfils;
     public static ConfigEntry<string> Labs_Exfils;
     public static ConfigEntry<string> Customs_Exfils;
     public static ConfigEntry<string> Streets_Exfils;
 
-    public static List<string> FactoryExfils = null;
-    public static List<string> GZExfils = null;
-    public static List<string> InterchangeExfils = null;
-    public static List<string> ShorelineExfils = null;
-    public static List<string> ReserveExfils = null;
-    public static List<string> LighthouseExfils = null;
-    public static List<string> LabsExfils = null;
-    public static List<string> CustomsExfils = null;
-    public static List<string> StreetsExfils = null;
-
     public static string localesFile = null;
     public static string localesContent = null;
     public static JObject localesObj = null;
-
-    public static string mapFile = null;
-    public static string mapContent = null;
-    public static JObject allExfils = null;
 
     public static string spawnpointsFile = null;
     public static string spawnpointsContent = null;
@@ -58,75 +47,81 @@ public class Plugin : BaseUnityPlugin
         Logger = base.Logger;
         Logger.LogInfo($"hazelify.CustomInfil has loaded!");
 
-        // readLocales();
-        readExfils();
+        readLocales();
         readSpawnpointsFile();
-        assignExfils();
 
-        new RaidStartPatch().Enable();
+        //new RaidStartPatch().Enable();
+        // new ExfilDumper().Enable();
 
         Factory_Exfils = Config.Bind(
             "Exfils",
             "Factory Infil Zone",
             "Random",
             new ConfigDescription("Choose which exfil on Factory you want to spawn by",
-            new AcceptableValueList<string>(FactoryExfils.ToArray()),
+            new AcceptableValueList<string>(ExfilData.factory4_day.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
         GZ_Exfils = Config.Bind(
             "Exfils",
             "GZ Infil Zone",
             "Random",
             new ConfigDescription("Choose which exfil on Ground Zero you want to spawn by",
-            new AcceptableValueList<string>(GZExfils.ToArray()),
+            new AcceptableValueList<string>(ExfilData.sandbox.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
         Interchange_Exfils = Config.Bind(
             "Exfils",
             "Interchange Infil Zone",
             "Random",
             new ConfigDescription("Choose which exfil on Interchange you want to spawn by",
-            new AcceptableValueList<string>(InterchangeExfils.ToArray()),
+            new AcceptableValueList<string>(ExfilData.interchange.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
         Shoreline_Exfils = Config.Bind(
             "Exfils",
             "Shoreline Infil Zone",
             "Random",
             new ConfigDescription("Choose which exfil on Shoreline you want to spawn by",
-            new AcceptableValueList<string>(ShorelineExfils.ToArray()),
+            new AcceptableValueList<string>(ExfilData.shoreline.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
+        Woods_Exfils = Config.Bind(
+            "Exfils",
+            "Woods Infil Zone",
+            "Random",
+            new ConfigDescription("Choose which exfil on Woods you want to spawn by",
+            new AcceptableValueList<string>(ExfilData.woods.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
         Reserve_Exfils = Config.Bind(
             "Exfils",
             "Reserve Infil Zone",
             "Random",
             new ConfigDescription("Choose which exfil on Reserve you want to spawn by",
-            new AcceptableValueList<string>(ReserveExfils.ToArray()),
+            new AcceptableValueList<string>(ExfilData.rezervbase.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
         Lighthouse_Exfils = Config.Bind(
             "Exfils",
             "Lighthouse Infil Zone",
             "Random",
             new ConfigDescription("Choose which exfil on Lighthouse you want to spawn by",
-            new AcceptableValueList<string>(LighthouseExfils.ToArray()),
+            new AcceptableValueList<string>(ExfilData.lighthouse.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
         Labs_Exfils = Config.Bind(
             "Exfils",
             "Labs Infil Zone",
             "Random",
             new ConfigDescription("Choose which exfil on Labs you want to spawn by",
-            new AcceptableValueList<string>(LabsExfils.ToArray()),
+            new AcceptableValueList<string>(ExfilData.laboratory.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
         Customs_Exfils = Config.Bind(
             "Exfils",
             "Customs Infil Zone",
             "Random",
             new ConfigDescription("Choose which exfil on Customs you want to spawn by",
-            new AcceptableValueList<string>(CustomsExfils.ToArray()),
+            new AcceptableValueList<string>(ExfilData.bigmap.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
         Streets_Exfils = Config.Bind(
             "Exfils",
             "Streets Infil Zone",
             "Random",
             new ConfigDescription("Choose which exfil on Streets you want to spawn by",
-            new AcceptableValueList<string>(StreetsExfils.ToArray()),
+            new AcceptableValueList<string>(ExfilData.tarkovstreets.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
 
         useLastExfil = Config.Bind(
@@ -149,77 +144,85 @@ public class Plugin : BaseUnityPlugin
 
     public void readLocales()
     {
-        localesFile = Path.Combine(currentEnv, "BepInEx", "plugins", "hazelify.CustomInfil", "locales.json");
+        localesFile = Path.Combine(currentEnv, "SPT_Data", "Server", "database", "locales", "global", "en.json");
 
-        if (localesFile == null) return;
-        if (!File.Exists(localesFile)) return;
-
-        localesContent = File.ReadAllText(localesFile);
-        localesObj = JObject.Parse(localesContent);
-    }
-
-    public void readExfils()
-    {
-        mapFile = Path.Combine(currentEnv, "BepInEx", "plugins", "hazelify.CustomInfil", "exfils.json");
-
-        if (mapFile == null) return;
-        if (!File.Exists(mapFile)) return;
-
-        mapContent = File.ReadAllText(mapFile);
-        allExfils = JObject.Parse(mapContent);
-    }
-
-    public void assignExfils()
-    {
-        FactoryExfils = new List<string>();
-        GZExfils = new List<string>();
-        InterchangeExfils = new List<string>();
-        ShorelineExfils = new List<string>();
-        ReserveExfils = new List<string>();
-        LighthouseExfils = new List<string>();
-        LabsExfils = new List<string>();
-        CustomsExfils = new List<string>();
-        StreetsExfils = new List<string>();
-        foreach (var exfil in allExfils)
+        if (localesFile == null)
         {
-            string location = exfil.Key.ToString();
-            JArray exfilArray = (JArray)exfil.Value["exfils"];
-            foreach (var xfil in exfilArray)
+            Logger.LogInfo("`localesFile` is null");
+        }
+        else
+        {
+            if (!File.Exists(localesFile))
             {
-                string name = xfil["Name"].ToString();
-                string fetched_local_version = (string)localesObj[location][name];
-
-                switch (location)
-                {
-                    case "factory4_day":
-                        FactoryExfils.Add(name);
-                        break;
-                    case "sandbox":
-                        GZExfils.Add(name);
-                        break;
-                    case "interchange":
-                        InterchangeExfils.Add(name);
-                        break;
-                    case "shoreline":
-                        ShorelineExfils.Add(name);
-                        break;
-                    case "rezervbase":
-                        ReserveExfils.Add(name);
-                        break;
-                    case "lighthouse":
-                        LighthouseExfils.Add(name);
-                        break;
-                    case "laboratory":
-                        LabsExfils.Add(name);
-                        break;
-                    case "bigmap":
-                        CustomsExfils.Add(name);
-                        break;
-                    case "tarkovstreets":
-                        StreetsExfils.Add(name);
-                        break;
-                }
+                Logger.LogInfo("`localesFile` does not exist");
             }
+            else
+            {
+                localesContent = File.ReadAllText(localesFile);
+                localesObj = JObject.Parse(localesContent);
+            }
+        }
+
+    }
+
+    public static string GetLocalizedName(string name)
+    {
+        if (localesObj.ContainsKey(name) && localesObj[name] != null)
+            return localesObj[name].ToString().Localized();
+        return name;
+    }
+
+    public static string GetOriginalName(string location, string localizedName)
+    {
+        if (localesObj.TryGetValue(location, out JToken locationObj))
+        {
+            foreach (var prop in locationObj.Children<JProperty>())
+            {
+                if (prop.Value.ToString().Equals(localizedName, StringComparison.OrdinalIgnoreCase))
+                    return prop.Name;
+            }
+        }
+        return localizedName;
+    }
+
+    public List<string> assignTranslatedNames(List<string> names)
+    {
+        List<string> translatedNames = new List<string>();
+        foreach (string name in names)
+        {
+            string translatedName = GetLocalizedName(name);
+            string merged_name = name + " (" + translatedName + ")";
+            translatedNames.Add(merged_name);
+        }
+
+        return translatedNames;
+    }
+
+    public static List<string> GetExfilList(string mapName)
+    {
+        var type = typeof(ExfilData);
+        var field = type.GetField(mapName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+
+        if (field != null)
+        {
+            return field.GetValue(null) as List<string>;
+        }
+
+        return null;
+    }
+
+    public static void logIssue(string message, bool isError)
+    {
+        message = "[CustomInfil] " + message;
+
+        ConsoleScreen.Log(message);
+        if (isError)
+        {
+            Logger.LogError(message);
+        }
+        else
+        {
+            Logger.LogInfo(message);
         }
     }
 }
