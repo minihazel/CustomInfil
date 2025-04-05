@@ -3,8 +3,9 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using EFT.InventoryLogic;
 using EFT.UI;
-using hazelify.CustomInfil;
+using hazelify.CustomInfil.Data;
 using hazelify.CustomInfil.Patches;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ public class Plugin : BaseUnityPlugin
 {
     internal static new ManualLogSource Logger;
     public static string currentEnv = Environment.CurrentDirectory; // main SPT dir
+    public static MapPlayerManager playerManager = null;
 
     public static ConfigEntry<string> Factory_Exfils;
     public static ConfigEntry<string> GZ_Exfils;
@@ -42,8 +44,6 @@ public class Plugin : BaseUnityPlugin
     public static List<string> translated_tarkovstreets = null;
     public static List<string> translated_lighthouse = null;
 
-    public static string translatedExfil = null;
-
     public static string localesFile = null;
     public static string localesContent = null;
     public static JObject localesObj = null;
@@ -52,10 +52,15 @@ public class Plugin : BaseUnityPlugin
     public static string spawnpointsContent = null;
     public static JObject spawnpointsObj = null;
 
+    public static string playerDataFile = null;
+    public static string playerDataContent = null;
+    public static JObject playerDataObj = null;
+
     // config options
     public static ConfigEntry<string> usedExfil;
     public static ConfigEntry<bool> useLastExfil;
     public static ConfigEntry<bool> chooseInfil;
+    public static ConfigEntry<bool> wipePlayerData;
 
     private void Awake()
     {
@@ -64,15 +69,23 @@ public class Plugin : BaseUnityPlugin
 
         readLocales();
         readSpawnpointsFile();
+        readPlayerDataFile();
 
+        playerManager = new MapPlayerManager();
         new RaidStartPatch().Enable();
-        // new ExfilDumper().Enable
+        new LocalRaidEndedPatch().Enable();
 
         chooseInfil = Config.Bind(
             "CustomInfil",
             "Choose infil manually?",
             true,
             "Toggle if you want to choose which exfil to spawn at.");
+
+        wipePlayerData = Config.Bind(
+            "CustomInfil",
+            "Wipe existing player data",
+            false,
+            "This will wipe all existing exfiltration data for all maps, so where you last exfiltrated on any given map is wiped clean.");
 
         Factory_Exfils = Config.Bind(
             "Exfils",
@@ -210,7 +223,28 @@ public class Plugin : BaseUnityPlugin
                 localesObj = JObject.Parse(localesContent);
             }
         }
+    }
 
+    public void readPlayerDataFile()
+    {
+        playerDataFile = Path.Combine(currentEnv, "BepInEx", "plugins", "hazelify.CustomInfil", "PlayerData.json");
+
+        if (playerDataFile == null)
+        {
+            Logger.LogInfo("`playerDataFile` is null");
+        }
+        else
+        {
+            if (!File.Exists(playerDataFile))
+            {
+                Logger.LogInfo("`playerDataFile` does not exist");
+            }
+            else
+            {
+                playerDataContent = File.ReadAllText(playerDataFile);
+                playerDataObj = JObject.Parse(playerDataContent);
+            }
+        }
     }
 
     public static string GetLocalizedName(string name)
@@ -270,6 +304,20 @@ public class Plugin : BaseUnityPlugin
         }
 
         return null;
+    }
+
+    public static Dictionary<string, PlayerData> LoadPlayerData()
+    {
+        if (!File.Exists(playerDataFile))
+        {
+            logIssue("PlayerData.json file not found, creating a new one.", true);
+            File.Create(playerDataFile).Close();
+            return new Dictionary<string, PlayerData>();
+        }
+
+        string json = File.ReadAllText(playerDataFile);
+        return JsonConvert.DeserializeObject<Dictionary<string, PlayerData>>(json);
+        return new Dictionary<string, PlayerData>();
     }
 
     public static void logIssue(string message, bool isError)

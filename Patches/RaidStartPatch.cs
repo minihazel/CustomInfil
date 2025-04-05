@@ -19,6 +19,7 @@ using UnityEngine;
 using System.Numerics;
 using System.Collections.Generic;
 using BepInEx.Configuration;
+using hazelify.CustomInfil.Data;
 
 namespace hazelify.CustomInfil.Patches
 {
@@ -33,6 +34,7 @@ namespace hazelify.CustomInfil.Patches
         [PatchPostfix]
         private static void PatchPostfix(ref Player __instance)
         {
+
             if (__instance == null) return;
             var gameWorld = Singleton<GameWorld>.Instance;
             Player player = gameWorld.MainPlayer;
@@ -40,7 +42,6 @@ namespace hazelify.CustomInfil.Patches
             if (gameWorld.LocationId == null)
             {
                 Plugin.logIssue("GameWorld location is null", true);
-                Logger.LogInfo("3.5");
                 return;
             }
 
@@ -53,6 +54,30 @@ namespace hazelify.CustomInfil.Patches
             string currentLoc = gameWorld.LocationId.ToString().ToLower();
             var exfilController = gameWorld.ExfiltrationController;
             var side = player.Side;
+
+            if (!Plugin.chooseInfil.Value &&
+                Plugin.playerManager.DoesPlayerDataExist(player.ProfileId, currentLoc))
+            {
+                PlayerData existingPlayerData = Plugin.playerManager.GetPlayerData(player.ProfileId, currentLoc);
+                Vector3 existingPosition = (Vector3)existingPlayerData.Position;
+                Vector2 existingRotation = (Vector2)existingPlayerData.Rotation;
+
+                if (existingPosition == null)
+                {
+                    Plugin.logIssue("RaidStartPatch -> PlayerData position is null", true);
+                    return;
+                }
+
+                if (existingRotation == null)
+                {
+                    Plugin.logIssue("RaidStartPatch -> PlayerData rotation is null", true);
+                    return;
+                }
+
+                player.Teleport(existingPlayerData.Position, true);
+                player.Rotate(existingPlayerData.Rotation);
+                return;
+            };
 
             switch (currentLoc)
             {

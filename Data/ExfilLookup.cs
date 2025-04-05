@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace hazelify.CustomInfil
+namespace hazelify.CustomInfil.Data
 {
     public static class ExfilLookup
     {

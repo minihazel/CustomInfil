@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace hazelify.CustomInfil
+namespace hazelify.CustomInfil.Data
 {
     public static class ExfilData
     {
