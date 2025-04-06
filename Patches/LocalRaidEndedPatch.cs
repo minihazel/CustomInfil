@@ -1,12 +1,16 @@
 ﻿using Comfort.Common;
 using CustomInfil;
 using EFT;
+using EFT.Interactive;
+using EFT.UI.BattleTimer;
 using HarmonyLib;
 using hazelify.CustomInfil.Data;
 using SPT.Reflection.Patching;
-using System.Numerics;
+using System;
+using System.Linq;
 using System.Reflection;
-using UnityEngine;
+using System.Timers;
+using UnityEngine.Pool;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
@@ -16,13 +20,13 @@ namespace hazelify.CustomInfil.Patches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(Class303), nameof(Class303.LocalRaidEnded));
+            return AccessTools.Method(typeof(Player), nameof(Player.OnDestroy));
         }
 
-        [PatchPostfix]
-        private static void PatchPostfix(ref Player __instance)
+        [PatchPrefix]
+        private static void PatchPrefix(ref Player __instance)
         {
-            if (!Plugin.useLastExfil.Value) return;
+            Plugin.hasSpawned = true;
             if (__instance == null) return;
 
             var gameWorld = Singleton<GameWorld>.Instance;
@@ -47,19 +51,19 @@ namespace hazelify.CustomInfil.Patches
                 return;
             }
 
-            float currentPlayerX = (float)player.Position.x;
-            float currentPlayerY = (float)player.Position.y;
-            float currentPlayerZ = (float)player.Position.z;
+            float currentPlayerX = (float)__instance.gameObject.transform.position.x;
+            float currentPlayerY = (float)__instance.gameObject.transform.position.y;
+            float currentPlayerZ = (float)__instance.gameObject.transform.position.z;
 
             Vector3 currentPlayerPosition = new Vector3(currentPlayerX, currentPlayerY, currentPlayerZ);
             if (currentPlayerPosition == null)
             {
                 Plugin.logIssue("LocalRaidEndedPatch -> currentPlayerPosition is null", true);
                 return;
-            } 
+            }
 
-            float currentPlayerRotationX = (float)player.Rotation.x;
-            float currentPlayerRotationY = (float)player.Rotation.y;
+            float currentPlayerRotationX = (float)__instance.gameObject.transform.rotation.x;
+            float currentPlayerRotationY = (float)__instance.gameObject.transform.rotation.y;
 
             Vector2 currentPlayerRotation = new Vector2(currentPlayerRotationX, currentPlayerRotationY);
             if (currentPlayerRotation == null)
@@ -75,9 +79,50 @@ namespace hazelify.CustomInfil.Patches
                 return;
             }
 
-            Plugin.playerManager.SetPlayerData(player.ProfileId, currentLoc, currentPlayerPosition, currentPlayerRotation);
-            string successMessage = $"Set player data of {player.ProfileId} to position {currentPlayerPosition} and rotation {currentPlayerRotation} on map " + currentLoc;
-            Plugin.logIssue(successMessage, false);
+            if (player.ActiveHealthController.IsAlive)
+            {
+                Plugin.playerManager.SetPlayerData(player.ProfileId, currentLoc, currentPlayerPosition, currentPlayerRotation);
+                string successMessage = $"Set player data of {player.ProfileId} to position {currentPlayerPosition} and rotation {currentPlayerRotation} on map " + currentLoc;
+                Plugin.logIssue(successMessage, false);
+            }
+        }
+    }
+
+    public class OnPlayerEnter : ModulePatch
+    {
+
+        protected override MethodBase GetTargetMethod()
+        {
+            return AccessTools.Method(typeof(ExfiltrationPoint), nameof(ExfiltrationPoint.OnPlayerEnter));
+        }
+
+        [PatchPostfix]
+        public static void PatchPostfix(ref Player __instance)
+        {
+            var gameWorld = Singleton<GameWorld>.Instance;
+            if (gameWorld == null) return;
+
+            if (Plugin.hasSpawned)
+            {
+                foreach (ExfiltrationPoint point in LocationScene.GetAllObjectsAndWhenISayAllIActuallyMeanIt<ExfiltrationPoint>().ToArray<ExfiltrationPoint>())
+                {
+                    if (!(point == null))
+                    {
+                        point.DisableInteraction();
+                    }
+                }
+                Plugin.hasSpawned = false;
+            }
+            else
+            {
+                foreach (ExfiltrationPoint point in LocationScene.GetAllObjectsAndWhenISayAllIActuallyMeanIt<ExfiltrationPoint>().ToArray<ExfiltrationPoint>())
+                {
+                    if (!(point == null))
+                    {
+                        point.EnableInteraction();
+                    }
+                }
+            }
         }
     }
 }

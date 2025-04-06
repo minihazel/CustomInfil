@@ -10,23 +10,28 @@ namespace hazelify.CustomInfil.Data
 {
     public class MapPlayerManager
     {
-        private Dictionary<string, PlayerData> playerDataDictionary = new Dictionary<string, PlayerData>();
 
         public PlayerData GetPlayerData(string mapName)
         {
-            if (playerDataDictionary.ContainsKey(mapName))
+            if (Plugin.playerDataDictionary.ContainsKey(mapName))
             {
-                return playerDataDictionary[mapName];
+                return Plugin.playerDataDictionary[mapName];
             }
             return null;
         }
 
         public void SetPlayerData(string profileId, string mapName, Vector3 position, Vector2 rotation)
         {
-            var playerData = new PlayerData(profileId, position, rotation);
-            playerDataDictionary[mapName] = playerData;
+            float positionX = position.x;
+            float positionY = position.y;
+            float positionZ = position.z;
 
-            SavePlayerData(playerDataDictionary);
+            float rotationX = rotation.x;
+            float rotationY = rotation.y;
+
+            var playerData = new PlayerData(profileId, positionX, positionY, positionZ, rotationX, rotationY);
+            Plugin.playerDataDictionary[mapName] = playerData;
+            SavePlayerData(Plugin.playerDataDictionary);
         }
 
         public void SavePlayerData(Dictionary<string, PlayerData> playerDataDict)
@@ -44,7 +49,7 @@ namespace hazelify.CustomInfil.Data
 
         public bool DoesPlayerDataExist(string mapName)
         {
-            return playerDataDictionary.ContainsKey(mapName);
+            return Plugin.playerDataDictionary.ContainsKey(mapName);
         }
     }
 }

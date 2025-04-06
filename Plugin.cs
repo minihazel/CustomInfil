@@ -20,7 +20,11 @@ public class Plugin : BaseUnityPlugin
 {
     internal static new ManualLogSource Logger;
     public static string currentEnv = Environment.CurrentDirectory; // main SPT dir
+
     public static MapPlayerManager playerManager = null;
+    public static Dictionary<string, PlayerData> playerDataDictionary = null;
+    public static Dictionary<string, List<SpawnpointsData>> spawnDataDictionary = null;
+    public static bool hasSpawned = false;
 
     public static ConfigEntry<string> Factory_Exfils;
     public static ConfigEntry<string> GZ_Exfils;
@@ -47,6 +51,7 @@ public class Plugin : BaseUnityPlugin
     public static string localesFile = null;
     public static string localesContent = null;
     public static JObject localesObj = null;
+    public static Dictionary<string, string> locales = null;
 
     public static string spawnpointsFile = null;
     public static string spawnpointsContent = null;
@@ -68,101 +73,102 @@ public class Plugin : BaseUnityPlugin
         Logger.LogInfo($"hazelify.CustomInfil has loaded!");
 
         readLocales();
-        readSpawnpointsFile();
         readPlayerDataFile();
+        readSpawnpointsFile();
 
         playerManager = new MapPlayerManager();
+        playerDataDictionary = LoadPlayerData();
+
         new RaidStartPatch().Enable();
         new LocalRaidEndedPatch().Enable();
+        new OnPlayerEnter().Enable();
 
-        chooseInfil = Config.Bind(
-            "CustomInfil",
-            "Choose infil manually?",
+        useLastExfil = Config.Bind(
+            "Core",
+            "A. Spawn into your last exfil?",
             true,
-            "Toggle if you want to choose which exfil to spawn at.");
-
-        wipePlayerData = Config.Bind(
-            "CustomInfil",
-            "Wipe existing player data",
+            "Toggle if you want to spawn where you last exfiltrated (if you go back to the same map)");
+        chooseInfil = Config.Bind(
+            "Core",
+            "B. Choose infil spawn?",
             false,
-            "This will wipe all existing exfiltration data for all maps, so where you last exfiltrated on any given map is wiped clean.");
+            "Toggle if you want to choose which exfil to spawn at.\n\nUse the map dropdown lists to select which exfiltration zone to infiltrate into (spawn at).");
+        wipePlayerData = Config.Bind(
+            "Core",
+            "C. Wipe saved exfil spawn data",
+            false,
+            "This will wipe all existing data for where you last exfiltrated on all maps.\n\nTHIS IS IRREVERSIBLE AND WILL HAPPEN INSTANTLY");
 
-        Factory_Exfils = Config.Bind(
-            "Exfils",
-            "Factory Infil Zone",
-            "Random",
-            new ConfigDescription("Choose which exfil on Factory you want to spawn by",
-            new AcceptableValueList<string>(ExfilDescData.factory4_day.ToArray()),
-            new ConfigurationManagerAttributes { Order = 10 }));
-        GZ_Exfils = Config.Bind(
-            "Exfils",
-            "GZ Infil Zone",
-            "Random",
-            new ConfigDescription("Choose which exfil on Ground Zero you want to spawn by",
-            new AcceptableValueList<string>(ExfilDescData.sandbox.ToArray()),
-            new ConfigurationManagerAttributes { Order = 10 }));
-        Interchange_Exfils = Config.Bind(
-            "Exfils",
-            "Interchange Infil Zone",
-            "Random",
-            new ConfigDescription("Choose which exfil on Interchange you want to spawn by",
-            new AcceptableValueList<string>(ExfilDescData.interchange.ToArray()),
-            new ConfigurationManagerAttributes { Order = 10 }));
-        Shoreline_Exfils = Config.Bind(
-            "Exfils",
-            "Shoreline Infil Zone",
-            "Random",
-            new ConfigDescription("Choose which exfil on Shoreline you want to spawn by",
-            new AcceptableValueList<string>(ExfilDescData.shoreline.ToArray()),
-            new ConfigurationManagerAttributes { Order = 10 }));
-        Woods_Exfils = Config.Bind(
-            "Exfils",
-            "Woods Infil Zone",
-            "Random",
-            new ConfigDescription("Choose which exfil on Woods you want to spawn by",
-            new AcceptableValueList<string>(ExfilDescData.woods.ToArray()),
-            new ConfigurationManagerAttributes { Order = 10 }));
-        Reserve_Exfils = Config.Bind(
-            "Exfils",
-            "Reserve Infil Zone",
-            "Random",
-            new ConfigDescription("Choose which exfil on Reserve you want to spawn by",
-            new AcceptableValueList<string>(ExfilDescData.rezervbase.ToArray()),
-            new ConfigurationManagerAttributes { Order = 10 }));
-        Lighthouse_Exfils = Config.Bind(
-            "Exfils",
-            "Lighthouse Infil Zone",
-            "Random",
-            new ConfigDescription("Choose which exfil on Lighthouse you want to spawn by",
-            new AcceptableValueList<string>(ExfilDescData.lighthouse.ToArray()),
-            new ConfigurationManagerAttributes { Order = 10 }));
-        Labs_Exfils = Config.Bind(
-            "Exfils",
-            "Labs Infil Zone",
-            "Random",
-            new ConfigDescription("Choose which exfil on Labs you want to spawn by",
-            new AcceptableValueList<string>(ExfilDescData.laboratory.ToArray()),
-            new ConfigurationManagerAttributes { Order = 10 }));
         Customs_Exfils = Config.Bind(
-            "Exfils",
-            "Customs Infil Zone",
-            "Random",
+            "Exfiltration Zones",
+            "A. Customs Spawn Zone",
+            "ZB-013",
             new ConfigDescription("Choose which exfil on Customs you want to spawn by",
             new AcceptableValueList<string>(ExfilDescData.bigmap.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
+        Factory_Exfils = Config.Bind(
+            "Exfiltration Zones",
+            "B. Factory Spawn Zone",
+            "Cellars",
+            new ConfigDescription("Choose which exfil on Factory you want to spawn by",
+            new AcceptableValueList<string>(ExfilDescData.factory4_day.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
+        Interchange_Exfils = Config.Bind(
+            "Exfiltration Zones",
+            "C. Interchange Spawn Zone",
+            "Hole in the Fence",
+            new ConfigDescription("Choose which exfil on Interchange you want to spawn by",
+            new AcceptableValueList<string>(ExfilDescData.interchange.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
+        Labs_Exfils = Config.Bind(
+            "Exfiltration Zones",
+            "D. Labs Spawn Zone",
+            "Medical Block Elevator",
+            new ConfigDescription("Choose which exfil on Labs you want to spawn by",
+            new AcceptableValueList<string>(ExfilDescData.laboratory.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
+        Lighthouse_Exfils = Config.Bind(
+            "Exfiltration Zones",
+            "E. Lighthouse Spawn Zone",
+            "Armored Train",
+            new ConfigDescription("Choose which exfil on Lighthouse you want to spawn by",
+            new AcceptableValueList<string>(ExfilDescData.lighthouse.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
+        Reserve_Exfils = Config.Bind(
+            "Exfiltration Zones",
+            "F. Reserve Spawn Zone",
+            "Armored Train",
+            new ConfigDescription("Choose which exfil on Reserve you want to spawn by",
+            new AcceptableValueList<string>(ExfilDescData.rezervbase.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
+        GZ_Exfils = Config.Bind(
+            "Exfiltration Zones",
+            "G. Ground Zero Spawn Zone",
+            "Police Cordon V-Ex",
+            new ConfigDescription("Choose which exfil on Ground Zero you want to spawn by",
+            new AcceptableValueList<string>(ExfilDescData.sandbox.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
+        Shoreline_Exfils = Config.Bind(
+            "Exfiltration Zones",
+            "H. Shoreline Spawn Zone",
+            "Road to North V-Ex",
+            new ConfigDescription("Choose which exfil on Shoreline you want to spawn by",
+            new AcceptableValueList<string>(ExfilDescData.shoreline.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
         Streets_Exfils = Config.Bind(
-            "Exfils",
-            "Streets Infil Zone",
-            "Random",
+            "Exfiltration Zones",
+            "I. Streets Spawn Zone",
+            "Courtyard",
             new ConfigDescription("Choose which exfil on Streets you want to spawn by",
             new AcceptableValueList<string>(ExfilDescData.tarkovstreets.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
-
-        useLastExfil = Config.Bind(
-            "Last Infil",
-            "Toggle mod",
-            true,
-            "Toggle if the mod should act during spawn or not.");
+        Woods_Exfils = Config.Bind(
+            "Exfiltration Zones",
+            "J. Woods Spawn Zone",
+            "Friendship Bridge (Co-Op)",
+            new ConfigDescription("Choose which exfil on Woods you want to spawn by",
+            new AcceptableValueList<string>(ExfilDescData.woods.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
 
         Factory_Exfils.SettingChanged += OnExfilsSettingChanged;
         GZ_Exfils.SettingChanged += OnExfilsSettingChanged;
@@ -174,17 +180,17 @@ public class Plugin : BaseUnityPlugin
         Labs_Exfils.SettingChanged += OnExfilsSettingChanged;
         Customs_Exfils.SettingChanged += OnExfilsSettingChanged;
         Streets_Exfils.SettingChanged += OnExfilsSettingChanged;
+
+        useLastExfil.SettingChanged += onExfilSettingChanged;
+        chooseInfil.SettingChanged += onInfilSettingChanged;
     }
 
     private void OnExfilsSettingChanged(object sender, EventArgs e)
     {
-        if (sender is ConfigEntry<string> entry &&
-        entry.Description.AcceptableValues is AcceptableValueList<string> valueList)
+        if (sender is ConfigEntry<string> entry && entry.Description.AcceptableValues is AcceptableValueList<string> valueList)
         {
             var current = entry.Value;
             int index = Array.IndexOf(valueList.AcceptableValues, current);
-
-            // If it's a category marker like ↓ PMC EXFILS ↓, select the one below it
             if (current.StartsWith("↓") && index + 1 < valueList.AcceptableValues.Length)
             {
                 entry.Value = valueList.AcceptableValues[index + 1];
@@ -192,21 +198,46 @@ public class Plugin : BaseUnityPlugin
         }
     }
 
+    private void onExfilSettingChanged(object sender, EventArgs e)
+    {
+        if (useLastExfil.Value)
+        {
+            chooseInfil.Value = false;
+        }
+    }
+
+    private void onInfilSettingChanged(object sender, EventArgs e)
+    {
+        if (chooseInfil.Value)
+        {
+            useLastExfil.Value = false;
+        }
+    }
+
     public void readSpawnpointsFile()
     {
         spawnpointsFile = Path.Combine(currentEnv, "BepInEx", "plugins", "hazelify.CustomInfil", "spawnpoints.json");
-
-        if (spawnpointsFile == null) return;
-        if (!File.Exists(spawnpointsFile)) return;
-
-        spawnpointsContent = File.ReadAllText(spawnpointsFile);
-        spawnpointsObj = JObject.Parse(spawnpointsContent);
+        if (spawnpointsFile == null)
+        {
+            Logger.LogInfo("`spawnpointsFile` is null");
+        }
+        else
+        {
+            if (!File.Exists(spawnpointsFile))
+            {
+                Logger.LogInfo("`spawnpointsFile` does not exist");
+            }
+            else
+            {
+                spawnpointsContent = File.ReadAllText(spawnpointsFile);
+                spawnDataDictionary = JsonConvert.DeserializeObject<Dictionary<string, List<SpawnpointsData>>>(spawnpointsContent);
+            }
+        }
     }
 
     public void readLocales()
     {
         localesFile = Path.Combine(currentEnv, "SPT_Data", "Server", "database", "locales", "global", "en.json");
-
         if (localesFile == null)
         {
             Logger.LogInfo("`localesFile` is null");
@@ -220,7 +251,7 @@ public class Plugin : BaseUnityPlugin
             else
             {
                 localesContent = File.ReadAllText(localesFile);
-                localesObj = JObject.Parse(localesContent);
+                locales = JsonConvert.DeserializeObject<Dictionary<string, string>>(localesContent);
             }
         }
     }
@@ -249,22 +280,9 @@ public class Plugin : BaseUnityPlugin
 
     public static string GetLocalizedName(string name)
     {
-        if (localesObj.ContainsKey(name) && localesObj[name] != null)
-            return localesObj[name].ToString().Localized();
+        if (locales.ContainsKey(name) && locales[name] != null)
+            return locales[name].ToString().Localized();
         return name;
-    }
-
-    public static string GetOriginalName(string location, string localizedName)
-    {
-        if (localesObj.TryGetValue(location, out JToken locationObj))
-        {
-            foreach (var prop in locationObj.Children<JProperty>())
-            {
-                if (prop.Value.ToString().Equals(localizedName, StringComparison.OrdinalIgnoreCase))
-                    return prop.Name;
-            }
-        }
-        return localizedName;
     }
 
     public List<string> assignTranslatedNames(List<string> names)
@@ -284,9 +302,9 @@ public class Plugin : BaseUnityPlugin
     {
         string translated = null;
 
-        if (localesObj.ContainsKey(exfil))
+        if (locales.ContainsKey(exfil))
         {
-            string translatedName = localesObj[exfil].ToString().Localized();
+            string translatedName = locales[exfil].ToString().Localized();
             translated = translatedName;
         }
 

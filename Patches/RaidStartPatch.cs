@@ -55,28 +55,36 @@ namespace hazelify.CustomInfil.Patches
             var exfilController = gameWorld.ExfiltrationController;
             var side = player.Side;
 
-            if (!Plugin.chooseInfil.Value)
+            if (!Plugin.chooseInfil.Value && Plugin.useLastExfil.Value)
             {
                 if (Plugin.playerManager.DoesPlayerDataExist(currentLoc))
                 {
                     PlayerData existingPlayerData = Plugin.playerManager.GetPlayerData(currentLoc);
-                    Vector3 existingPosition = (Vector3)existingPlayerData.Position;
-                    Vector2 existingRotation = (Vector2)existingPlayerData.Rotation;
+                    float existingPosX = existingPlayerData.Position_X;
+                    float existingPosY = existingPlayerData.Position_Y;
+                    float existingPosZ = existingPlayerData.Position_Z;
 
-                    if (existingPosition == null)
+                    float existingRotX = existingPlayerData.Rotation_X;
+                    float existingRotY = existingPlayerData.Rotation_Y;
+
+                    Vector3 existingPos = new Vector3(existingPosX, existingPosY, existingPosZ);
+                    Vector2 existingRot = new Vector2(existingRotX, existingRotY);
+
+                    if (existingPos == null)
                     {
                         Plugin.logIssue("RaidStartPatch -> PlayerData position is null", true);
                         return;
                     }
 
-                    if (existingRotation == null)
+                    if (existingRot == null)
                     {
                         Plugin.logIssue("RaidStartPatch -> PlayerData rotation is null", true);
                         return;
                     }
 
-                    player.Teleport(existingPlayerData.Position, true);
-                    player.Rotate(existingPlayerData.Rotation);
+                    player.Teleport(existingPos, true);
+                    player.Rotate(existingRot);
+                    Plugin.logIssue("[CustomInfil] Teleported player to last known position: " + existingPos.ToString() + " with rotation " + existingRot.ToString(), false);
                 }
                 return;
             };
@@ -243,7 +251,7 @@ namespace hazelify.CustomInfil.Patches
             // CODE ACTUALLY STARTS HERE
             translatedInternalSelectedExfil = ExfilLookup.GetInternalName(currentLoc, selectedExfil);
             List<ExfiltrationPoint> points = [];
-            JArray currentMap = (JArray)Plugin.spawnpointsObj[currentLoc];
+            List<SpawnpointsData> currentMap = Plugin.spawnDataDictionary[currentLoc];
             JObject closestSpawn = null;
 
             string detectedExfilName = null;
@@ -284,21 +292,34 @@ namespace hazelify.CustomInfil.Patches
                 }
             }
 
-            foreach (JObject spawnPoint in currentMap)
+            foreach (var spawnPoint in currentMap)
             {
-                string spawnName = (string)spawnPoint["Name"];
+                string spawnName = (string)spawnPoint.Name;
 
                 spawnpoint_vec = new Vector3(
-                    (float)spawnPoint["coord_X"],
-                    (float)spawnPoint["coord_Y"],
-                    (float)spawnPoint["coord_Z"]);
+                    (float)spawnPoint.coord_X,
+                    (float)spawnPoint.coord_Y,
+                    (float)spawnPoint.coord_Z);
 
                 float distance = Vector3.Distance(currentExfilPosition, spawnpoint_vec);
+
+                JObject newSpawnpoint = new JObject
+                {
+                    ["Name"] = spawnName,
+                    ["Id"] = spawnPoint.Id,
+                    ["Infiltration"] = spawnPoint.Infiltration,
+                    ["Rotation_X"] = spawnPoint.Rotation_X,
+                    ["Rotation_Y"] = spawnPoint.Rotation_Y,
+                    ["Rotation_Z"] = spawnPoint.Rotation_Z,
+                    ["coord_X"] = spawnPoint.coord_X,
+                    ["coord_Y"] = spawnPoint.coord_Y,
+                    ["coord_Z"] = spawnPoint.coord_Z
+                };
 
                 if (distance < closestDistance)
                 {
                     closestDistance = distance;
-                    closestSpawn = spawnPoint;
+                    closestSpawn = newSpawnpoint;
                 }
             }
 
