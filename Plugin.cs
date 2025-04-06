@@ -238,11 +238,11 @@ public class Plugin : BaseUnityPlugin
             if (!File.Exists(playerDataFile))
             {
                 Logger.LogInfo("`playerDataFile` does not exist");
+                File.Create(playerDataFile).Close();
             }
             else
             {
                 playerDataContent = File.ReadAllText(playerDataFile);
-                playerDataObj = JObject.Parse(playerDataContent);
             }
         }
     }
@@ -315,9 +315,13 @@ public class Plugin : BaseUnityPlugin
             return new Dictionary<string, PlayerData>();
         }
 
-        string json = File.ReadAllText(playerDataFile);
-        return JsonConvert.DeserializeObject<Dictionary<string, PlayerData>>(json);
-        return new Dictionary<string, PlayerData>();
+        if (playerDataContent == null)
+        {
+            logIssue("PlayerData.json content is null", true);
+            return new Dictionary<string, PlayerData>();
+        }
+
+        return JsonConvert.DeserializeObject<Dictionary<string, PlayerData>>(playerDataContent);
     }
 
     public static void logIssue(string message, bool isError)

@@ -55,27 +55,29 @@ namespace hazelify.CustomInfil.Patches
             var exfilController = gameWorld.ExfiltrationController;
             var side = player.Side;
 
-            if (!Plugin.chooseInfil.Value &&
-                Plugin.playerManager.DoesPlayerDataExist(player.ProfileId, currentLoc))
+            if (!Plugin.chooseInfil.Value)
             {
-                PlayerData existingPlayerData = Plugin.playerManager.GetPlayerData(player.ProfileId, currentLoc);
-                Vector3 existingPosition = (Vector3)existingPlayerData.Position;
-                Vector2 existingRotation = (Vector2)existingPlayerData.Rotation;
-
-                if (existingPosition == null)
+                if (Plugin.playerManager.DoesPlayerDataExist(currentLoc))
                 {
-                    Plugin.logIssue("RaidStartPatch -> PlayerData position is null", true);
-                    return;
-                }
+                    PlayerData existingPlayerData = Plugin.playerManager.GetPlayerData(currentLoc);
+                    Vector3 existingPosition = (Vector3)existingPlayerData.Position;
+                    Vector2 existingRotation = (Vector2)existingPlayerData.Rotation;
 
-                if (existingRotation == null)
-                {
-                    Plugin.logIssue("RaidStartPatch -> PlayerData rotation is null", true);
-                    return;
-                }
+                    if (existingPosition == null)
+                    {
+                        Plugin.logIssue("RaidStartPatch -> PlayerData position is null", true);
+                        return;
+                    }
 
-                player.Teleport(existingPlayerData.Position, true);
-                player.Rotate(existingPlayerData.Rotation);
+                    if (existingRotation == null)
+                    {
+                        Plugin.logIssue("RaidStartPatch -> PlayerData rotation is null", true);
+                        return;
+                    }
+
+                    player.Teleport(existingPlayerData.Position, true);
+                    player.Rotate(existingPlayerData.Rotation);
+                }
                 return;
             };
 
@@ -235,6 +237,8 @@ namespace hazelify.CustomInfil.Patches
                     selectedExfil = Plugin.Labs_Exfils.Value.ToString();
                     break;
             }
+
+
 
             // CODE ACTUALLY STARTS HERE
             translatedInternalSelectedExfil = ExfilLookup.GetInternalName(currentLoc, selectedExfil);

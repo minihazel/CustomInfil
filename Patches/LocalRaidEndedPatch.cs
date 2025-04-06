@@ -68,7 +68,7 @@ namespace hazelify.CustomInfil.Patches
                 return;
             }
 
-            PlayerData playerData = Plugin.playerManager.GetPlayerData(player.ProfileId, gameWorld.LocationId);
+            PlayerData playerData = Plugin.playerManager.GetPlayerData(gameWorld.LocationId);
             if (playerData == null)
             {
                 Plugin.logIssue("LocalRaidEndedPatch -> playerData is null", true);

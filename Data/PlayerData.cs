@@ -11,16 +11,17 @@ namespace hazelify.CustomInfil.Data
     public class PlayerData
     {
         public string ProfileId { get; set; }
-        public string MapName { get; set; }
         public Vector3 Position { get; set; }
         public Vector2 Rotation { get; set; }
 
-        public PlayerData(string profileId, string mapName, Vector3 position, Vector2 rotation)
+        public PlayerData(string profileId, Vector3 position, Vector2 rotation)
         {
             ProfileId = profileId;
-            MapName = mapName;
             Position = position;
             Rotation = rotation;
         }
+
+        public Vector3 GetPosition() => new Vector3(Position.x, Position.y, Position.z);
+        public Vector3 GetRotation() => new Vector2(Rotation.x, Rotation.y);
     }
 }
