@@ -24,7 +24,7 @@ public class Plugin : BaseUnityPlugin
     public static MapPlayerManager playerManager = null;
     public static Dictionary<string, PlayerData> playerDataDictionary = null;
     public static Dictionary<string, List<SpawnpointsData>> spawnDataDictionary = null;
-    public static bool hasSpawned = false;
+    public static bool hasSpawned = true;
 
     public static ConfigEntry<string> Factory_Exfils;
     public static ConfigEntry<string> GZ_Exfils;
@@ -81,7 +81,7 @@ public class Plugin : BaseUnityPlugin
 
         new RaidStartPatch().Enable();
         new LocalRaidEndedPatch().Enable();
-        new OnPlayerEnter().Enable();
+        new OnPlayerExit().Enable();
 
         useLastExfil = Config.Bind(
             "Core",

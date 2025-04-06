@@ -26,7 +26,6 @@ namespace hazelify.CustomInfil.Patches
         [PatchPrefix]
         private static void PatchPrefix(ref Player __instance)
         {
-            Plugin.hasSpawned = true;
             if (__instance == null) return;
 
             var gameWorld = Singleton<GameWorld>.Instance;
@@ -88,40 +87,24 @@ namespace hazelify.CustomInfil.Patches
         }
     }
 
-    public class OnPlayerEnter : ModulePatch
+    public class OnPlayerExit : ModulePatch
     {
-
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(ExfiltrationPoint), nameof(ExfiltrationPoint.OnPlayerEnter));
+            return AccessTools.Method(typeof(ExfiltrationPoint), nameof(ExfiltrationPoint.OnPlayerExit));
         }
 
-        [PatchPostfix]
-        public static void PatchPostfix(ref Player __instance)
+        [PatchPrefix]
+        public static void PatchPrefix(ref ExfiltrationPoint __instance, ref Player obj)
         {
-            var gameWorld = Singleton<GameWorld>.Instance;
-            if (gameWorld == null) return;
+            if (__instance == null) return;
+            if (obj == null) return;
+            if (!Singleton<GameWorld>.Instantiated) return;
 
             if (Plugin.hasSpawned)
             {
-                foreach (ExfiltrationPoint point in LocationScene.GetAllObjectsAndWhenISayAllIActuallyMeanIt<ExfiltrationPoint>().ToArray<ExfiltrationPoint>())
-                {
-                    if (!(point == null))
-                    {
-                        point.DisableInteraction();
-                    }
-                }
+                ExfiltrationControllerClass.Instance.BannedPlayers.Remove(obj.Id);
                 Plugin.hasSpawned = false;
-            }
-            else
-            {
-                foreach (ExfiltrationPoint point in LocationScene.GetAllObjectsAndWhenISayAllIActuallyMeanIt<ExfiltrationPoint>().ToArray<ExfiltrationPoint>())
-                {
-                    if (!(point == null))
-                    {
-                        point.EnableInteraction();
-                    }
-                }
             }
         }
     }

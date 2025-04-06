@@ -34,7 +34,6 @@ namespace hazelify.CustomInfil.Patches
         [PatchPostfix]
         private static void PatchPostfix(ref Player __instance)
         {
-
             if (__instance == null) return;
             var gameWorld = Singleton<GameWorld>.Instance;
             Player player = gameWorld.MainPlayer;
@@ -81,6 +80,9 @@ namespace hazelify.CustomInfil.Patches
                         Plugin.logIssue("RaidStartPatch -> PlayerData rotation is null", true);
                         return;
                     }
+
+                    Plugin.hasSpawned = true;
+                    ExfiltrationControllerClass.Instance.BannedPlayers.Add(__instance.Id);
 
                     player.Teleport(existingPos, true);
                     player.Rotate(existingRot);
