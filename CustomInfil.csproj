@@ -67,6 +67,6 @@
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if exist &quot;$(ProjectDir)Build\hazelify.UnlockedEntries.dll&quot; del /F /Q &quot;$(ProjectDir)Build\hazelify.UnlockedEntries.dll&quot;&#xD;&#xA;xcopy /Y /D &quot;$(TargetPath)&quot; &quot;$(ProjectDir)Build\hazelify.UnlockedEntries\&quot;" />
+    <Exec Command="if exist &quot;$(ProjectDir)Build\hazelify.UnlockedEntries.dll&quot; del /F /Q &quot;$(ProjectDir)Build\hazelify.UnlockedEntries.dll&quot;&#xD;&#xA;xcopy /Y /D &quot;$(TargetPath)&quot; &quot;..\..\..\BepInEx\plugins\hazelify.UnlockedEntries\&quot;" />
   </Target>
 </Project>

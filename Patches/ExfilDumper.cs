@@ -33,10 +33,24 @@ namespace hazelify.UnlockedEntries.Patches
             string location = gameWorld.LocationId.ToString().ToLower();
 
             ExfiltrationPoint[] exfils = gameWorld.ExfiltrationController.ScavExfiltrationPoints;
+            ExfiltrationPoint[] pmcexfils = gameWorld.ExfiltrationController.ExfiltrationPoints;
 
             if (exfils == null)
             {
                 ConsoleScreen.Log("Null exfil");
+            }
+
+            for (int i = 0; i < exfils.Length; i++)
+            {
+                string _Name = exfils[i].Settings.Name.ToString();
+
+                string json = File.ReadAllText(mapFile);
+                JObject data = JObject.Parse(json);
+                JArray map = (JArray)data[location] as JArray;
+                string exfilItem = _Name;
+
+                map.Add(exfilItem);
+                File.WriteAllText(mapFile, data.ToString());
             }
 
             for (int i = 0; i < exfils.Length; i++)

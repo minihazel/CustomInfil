@@ -29,12 +29,6 @@ namespace hazelify.UnlockedEntries.Patches
         [PatchPrefix]
         private static void PatchPrefix(ref Player __instance)
         {
-            if (Plugin.LITentry.Value)
-            {
-                Plugin.logIssue("OnDestroy -> LeaveItThere / HomeComforts has been detected as installed, running patch like normal", false);
-                return;
-            }
-
             if (__instance == null) return;
             var gameWorld = Singleton<GameWorld>.Instance;
             if (gameWorld == null) return;
@@ -114,14 +108,8 @@ namespace hazelify.UnlockedEntries.Patches
         }
 
         [PatchPrefix]
-        public static void PatchPrefix(Collider col)
+        private static void PatchPrefix(Collider col)
         {
-            if (Plugin.LITentry.Value)
-            {
-                Plugin.logIssue("IPhysicsTrigger.OnTriggerExit -> LeaveItThere / HomeComforts has been detected as installed, running patch like normal", false);
-                return;
-            }
-
             GameWorld gameWorld = Singleton<GameWorld>.Instance;
             Player playerByCollider = gameWorld.GetPlayerByCollider(col);
 
