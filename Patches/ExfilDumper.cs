@@ -1,5 +1,5 @@
 ﻿using Comfort.Common;
-using CustomInfil;
+using UnlockedEntries;
 using EFT;
 using EFT.Interactive;
 using EFT.UI;
@@ -14,7 +14,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace hazelify.CustomInfil.Patches
+namespace hazelify.UnlockedEntries.Patches
 {
     public class ExfilDumper : ModulePatch
     {
@@ -29,7 +29,7 @@ namespace hazelify.CustomInfil.Patches
             if (__instance == null) return;
             var gameWorld = Singleton<GameWorld>.Instance;
             Player player = gameWorld.MainPlayer;
-            string mapFile = Path.Combine(Plugin.currentEnv, "BepInEx", "plugins", "hazelify.CustomInfil", "scavexfils.json");
+            string mapFile = Path.Combine(Plugin.currentEnv, "BepInEx", "plugins", "hazelify.UnlockedEntries", "scavexfils.json");
             string location = gameWorld.LocationId.ToString().ToLower();
 
             ExfiltrationPoint[] exfils = gameWorld.ExfiltrationController.ScavExfiltrationPoints;

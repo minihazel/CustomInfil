@@ -1,12 +1,13 @@
 ﻿using Comfort.Common;
-using CustomInfil;
+using UnlockedEntries;
 using EFT;
 using EFT.Interactive;
 using EFT.UI.BattleTimer;
 using HarmonyLib;
-using hazelify.CustomInfil.Data;
+using hazelify.UnlockedEntries.Data;
 using SPT.Reflection.Patching;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
@@ -16,7 +17,7 @@ using UnityEngine.Pool;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
-namespace hazelify.CustomInfil.Patches
+namespace hazelify.UnlockedEntries.Patches
 {
     public class LocalRaidEndedPatch : ModulePatch
     {
@@ -52,9 +53,9 @@ namespace hazelify.CustomInfil.Patches
                 return;
             }
 
-            float currentPlayerX = (float)__instance.gameObject.transform.position.x;
-            float currentPlayerY = (float)__instance.gameObject.transform.position.y;
-            float currentPlayerZ = (float)__instance.gameObject.transform.position.z;
+            float currentPlayerX = __instance.Position.x;
+            float currentPlayerY = __instance.Position.y;
+            float currentPlayerZ = __instance.Position.z;
 
             Vector3 currentPlayerPosition = new Vector3(currentPlayerX, currentPlayerY, currentPlayerZ);
             if (currentPlayerPosition == null)
@@ -63,10 +64,11 @@ namespace hazelify.CustomInfil.Patches
                 return;
             }
 
-            float currentPlayerRotationX = (float)__instance.gameObject.transform.rotation.x;
-            float currentPlayerRotationY = (float)__instance.gameObject.transform.rotation.y;
+            float currentPlayerRotationX = __instance.Rotation.x;
+            float currentPlayerRotationY = __instance.Rotation.y;
 
             Vector2 currentPlayerRotation = new Vector2(currentPlayerRotationX, currentPlayerRotationY);
+
             if (currentPlayerRotation == null)
             {
                 Plugin.logIssue("LocalRaidEndedPatch -> currentPlayerRotation is null", true);
@@ -107,7 +109,6 @@ namespace hazelify.CustomInfil.Patches
                 if (playerByCollider == gameWorld.MainPlayer)
                 {
                     ExfiltrationControllerClass.Instance.BannedPlayers.Remove(playerByCollider.Id);
-                    Plugin.logIssue("OnPlayerExit PatchPrefix -> Player exited the trigger", false);
                     Plugin.hasSpawned = false;
                 }
             }

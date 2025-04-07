@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using EFT;
 
-namespace hazelify.CustomInfil.Data
+namespace hazelify.UnlockedEntries.Data
 {
     public class PlayerData
     {

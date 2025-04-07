@@ -3,8 +3,8 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using EFT.InventoryLogic;
 using EFT.UI;
-using hazelify.CustomInfil.Data;
-using hazelify.CustomInfil.Patches;
+using hazelify.UnlockedEntries.Data;
+using hazelify.UnlockedEntries.Patches;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -13,9 +13,9 @@ using System.IO;
 using System.Net.Security;
 using static EFT.SpeedTree.TreeWind;
 
-namespace CustomInfil;
+namespace UnlockedEntries;
 
-[BepInPlugin("hazelify.custominfil", "Last Infil", "1.0.0")]
+[BepInPlugin("hazelify.UnlockedEntries", "Last Infil", "1.0.0")]
 public class Plugin : BaseUnityPlugin
 {
     internal static new ManualLogSource Logger;
@@ -70,14 +70,14 @@ public class Plugin : BaseUnityPlugin
     private void Awake()
     {
         Logger = base.Logger;
-        Logger.LogInfo($"hazelify.CustomInfil has loaded!");
+        Logger.LogInfo($"hazelify.UnlockedEntries has loaded!");
 
         readLocales();
         readPlayerDataFile();
         readSpawnpointsFile();
 
         playerManager = new MapPlayerManager();
-        playerDataDictionary = LoadPlayerData();
+        playerDataDictionary = MapPlayerManager.LoadPlayerData(playerDataFile);
 
         new RaidStartPatch().Enable();
         new LocalRaidEndedPatch().Enable();
@@ -216,7 +216,7 @@ public class Plugin : BaseUnityPlugin
 
     public void readSpawnpointsFile()
     {
-        spawnpointsFile = Path.Combine(currentEnv, "BepInEx", "plugins", "hazelify.CustomInfil", "spawnpoints.json");
+        spawnpointsFile = Path.Combine(currentEnv, "BepInEx", "plugins", "hazelify.UnlockedEntries", "spawnpoints.json");
         if (spawnpointsFile == null)
         {
             Logger.LogInfo("`spawnpointsFile` is null");
@@ -258,7 +258,7 @@ public class Plugin : BaseUnityPlugin
 
     public void readPlayerDataFile()
     {
-        playerDataFile = Path.Combine(currentEnv, "BepInEx", "plugins", "hazelify.CustomInfil", "PlayerData.json");
+        playerDataFile = Path.Combine(currentEnv, "BepInEx", "plugins", "hazelify.UnlockedEntries", "PlayerData.json");
 
         if (playerDataFile == null)
         {
@@ -324,27 +324,9 @@ public class Plugin : BaseUnityPlugin
         return null;
     }
 
-    public static Dictionary<string, PlayerData> LoadPlayerData()
-    {
-        if (!File.Exists(playerDataFile))
-        {
-            logIssue("PlayerData.json file not found, creating a new one.", true);
-            File.Create(playerDataFile).Close();
-            return new Dictionary<string, PlayerData>();
-        }
-
-        if (playerDataContent == null)
-        {
-            logIssue("PlayerData.json content is null", true);
-            return new Dictionary<string, PlayerData>();
-        }
-
-        return JsonConvert.DeserializeObject<Dictionary<string, PlayerData>>(playerDataContent);
-    }
-
     public static void logIssue(string message, bool isError)
     {
-        message = "[CustomInfil] " + message;
+        message = "[UnlockedEntries] " + message;
 
         ConsoleScreen.Log(message);
         if (isError)

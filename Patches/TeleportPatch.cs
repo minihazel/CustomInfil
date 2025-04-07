@@ -1,7 +1,7 @@
 ﻿using Comfort.Common;
 using EFT;
 using HarmonyLib;
-using CustomInfil;
+using UnlockedEntries;
 using SPT.Reflection.Patching;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace hazelify.CustomInfil.Patches
+namespace hazelify.UnlockedEntries.Patches
 {
     public class TeleportPatch : ModulePatch
     {

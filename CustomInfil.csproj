@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyName>hazelify.CustomInfil</AssemblyName>
+    <AssemblyName>hazelify.UnlockedEntries</AssemblyName>
     <Product>My first plugin</Product>
     <Version>1.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -12,7 +12,7 @@
       https://nuget.bepinex.dev/v3/index.json;
       https://nuget.samboy.dev/v3/index.json
     </RestoreAdditionalProjectSources>
-    <RootNamespace>hazelify.CustomInfil</RootNamespace>
+    <RootNamespace>hazelify.UnlockedEntries</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -67,6 +67,6 @@
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if exist &quot;$(ProjectDir)Build\hazelify.CustomInfil.dll&quot; del /F /Q &quot;$(ProjectDir)Build\hazelify.CustomInfil.dll&quot;&#xD;&#xA;xcopy /Y /D &quot;$(TargetPath)&quot; &quot;..\..\..\BepInEx\plugins\hazelify.CustomInfil\&quot;" />
+    <Exec Command="if exist &quot;$(ProjectDir)Build\hazelify.UnlockedEntries.dll&quot; del /F /Q &quot;$(ProjectDir)Build\hazelify.UnlockedEntries.dll&quot;&#xD;&#xA;xcopy /Y /D &quot;$(TargetPath)&quot; &quot;..\..\..\BepInEx\plugins\hazelify.UnlockedEntries\&quot;" />
   </Target>
 </Project>

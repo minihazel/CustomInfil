@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using EFT;
 using Newtonsoft.Json;
-using CustomInfil;
+using UnlockedEntries;
 using System.IO;
 
-namespace hazelify.CustomInfil.Data
+namespace hazelify.UnlockedEntries.Data
 {
     public class MapPlayerManager
     {
@@ -36,7 +36,7 @@ namespace hazelify.CustomInfil.Data
 
         public void SavePlayerData(Dictionary<string, PlayerData> playerDataDict)
         {
-            string json = JsonConvert.SerializeObject(playerDataDict, Formatting.Indented);
+            string json = JsonConvert.SerializeObject(playerDataDict, jsonSettings);
             try
             {
                 File.WriteAllText(Plugin.playerDataFile, json);
@@ -46,6 +46,30 @@ namespace hazelify.CustomInfil.Data
                 Plugin.logIssue(ex.Message.ToString(), true);
             }
         }
+
+        public static Dictionary<string, PlayerData> LoadPlayerData(string currentFile)
+        {
+            if (!File.Exists(currentFile))
+            {
+                Plugin.logIssue("PlayerData.json file not found, creating a new one.", true);
+                File.Create(currentFile).Close();
+                return new Dictionary<string, PlayerData>();
+            }
+            if (Plugin.playerDataContent == null)
+            {
+                Plugin.logIssue("PlayerData.json content is null", true);
+                return new Dictionary<string, PlayerData>();
+            }
+            return JsonConvert.DeserializeObject<Dictionary<string, PlayerData>>(Plugin.playerDataContent, jsonSettings);
+        }
+
+
+        private static readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+        {
+            FloatFormatHandling = FloatFormatHandling.DefaultValue,
+            FloatParseHandling = FloatParseHandling.Double,
+            Formatting = Formatting.Indented
+        };
 
         public bool DoesPlayerDataExist(string mapName)
         {

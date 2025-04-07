@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace hazelify.CustomInfil.Data
+namespace hazelify.UnlockedEntries.Data
 {
     public class SpawnpointsData
     {
