@@ -17,7 +17,7 @@ using static EFT.SpeedTree.TreeWind;
 namespace UnlockedEntries;
 
 [BepInPlugin("hazelify.UnlockedEntries", "Last Infil", "1.0.0")]
-[BepInDependency("Jehree.LeaveItThere.cfg", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("Jehree.LeaveItThere", BepInDependency.DependencyFlags.SoftDependency)]
 public class Plugin : BaseUnityPlugin
 {
     internal static new ManualLogSource Logger;
@@ -25,7 +25,7 @@ public class Plugin : BaseUnityPlugin
 
     // HC & LIT compat
     public static bool isLITinstalled { get; private set; }
-    public static string LITmod = "Jehree.LeaveItThere.cfg";
+    public static string LITmod = "Jehree.LeaveItThere";
 
     public static MapPlayerManager playerManager = null;
     public static Dictionary<string, PlayerData> playerDataDictionary = null;
@@ -78,134 +78,130 @@ public class Plugin : BaseUnityPlugin
     {
         isLITinstalled = Chainloader.PluginInfos.ContainsKey(LITmod);
 
-        if (!isLITinstalled)
+        Logger = base.Logger;
+        Logger.LogInfo($"hazelify.UnlockedEntries has loaded!");
+
+        readLocales();
+        readPlayerDataFile();
+        readSpawnpointsFile();
+
+        playerManager = new MapPlayerManager();
+        playerDataDictionary = MapPlayerManager.LoadPlayerData(playerDataFile);
+
+        new RaidStartPatch().Enable();
+        new LocalRaidEndedPatch().Enable();
+        new OnPlayerExit().Enable();
+
+        if (isLITinstalled)
         {
-            Logger = base.Logger;
-            Logger.LogInfo($"hazelify.UnlockedEntries has loaded!");
-
-            readLocales();
-            readPlayerDataFile();
-            readSpawnpointsFile();
-
-            playerManager = new MapPlayerManager();
-            playerDataDictionary = MapPlayerManager.LoadPlayerData(playerDataFile);
-
-            new RaidStartPatch().Enable();
-            new LocalRaidEndedPatch().Enable();
-            new OnPlayerExit().Enable();
-
-            if (isLITinstalled)
-            {
-                LITentry = Config.Bind(
-                    "A - LeaveItThere/HC detected",
-                    "Mod detection",
-                    false,
-                    "LeaveItThere and/or HomeComforts have been detected.\n\n\"Spawn into your last exfil\" and \"Choose infil spawn\" will both be disabled if you use this option.");
-            }
-
-            useLastExfil = Config.Bind(
-                "Core",
-                "A. Spawn into your last exfil?",
-                true,
-                "Toggle if you want to spawn where you last exfiltrated (if you go back to the same map)");
-            chooseInfil = Config.Bind(
-                "Core",
-                "B. Choose infil spawn?",
+            LITentry = Config.Bind(
+                "A - LeaveItThere/HC detected",
+                "Mod detection",
                 false,
-                "Toggle if you want to choose which exfil to spawn at.\n\nUse the map dropdown lists to select which exfiltration zone to infiltrate into (spawn at).");
-            wipePlayerData = Config.Bind(
-                "Core",
-                "C. Wipe saved exfil spawn data",
-                false,
-                "This will wipe all existing data for where you last exfiltrated on all maps.\n\nTHIS IS IRREVERSIBLE AND WILL HAPPEN INSTANTLY");
-
-            Customs_Exfils = Config.Bind(
-                "Exfiltration Zones",
-                "A. Customs Spawn Zone",
-                "ZB-013",
-                new ConfigDescription("Choose which exfil on Customs you want to spawn by",
-                new AcceptableValueList<string>(ExfilDescData.bigmap.ToArray()),
-                new ConfigurationManagerAttributes { Order = 10 }));
-            Factory_Exfils = Config.Bind(
-                "Exfiltration Zones",
-                "B. Factory Spawn Zone",
-                "Cellars",
-                new ConfigDescription("Choose which exfil on Factory you want to spawn by",
-                new AcceptableValueList<string>(ExfilDescData.factory4_day.ToArray()),
-                new ConfigurationManagerAttributes { Order = 10 }));
-            Interchange_Exfils = Config.Bind(
-                "Exfiltration Zones",
-                "C. Interchange Spawn Zone",
-                "Hole in the Fence",
-                new ConfigDescription("Choose which exfil on Interchange you want to spawn by",
-                new AcceptableValueList<string>(ExfilDescData.interchange.ToArray()),
-                new ConfigurationManagerAttributes { Order = 10 }));
-            Labs_Exfils = Config.Bind(
-                "Exfiltration Zones",
-                "D. Labs Spawn Zone",
-                "Medical Block Elevator",
-                new ConfigDescription("Choose which exfil on Labs you want to spawn by",
-                new AcceptableValueList<string>(ExfilDescData.laboratory.ToArray()),
-                new ConfigurationManagerAttributes { Order = 10 }));
-            Lighthouse_Exfils = Config.Bind(
-                "Exfiltration Zones",
-                "E. Lighthouse Spawn Zone",
-                "Armored Train",
-                new ConfigDescription("Choose which exfil on Lighthouse you want to spawn by",
-                new AcceptableValueList<string>(ExfilDescData.lighthouse.ToArray()),
-                new ConfigurationManagerAttributes { Order = 10 }));
-            Reserve_Exfils = Config.Bind(
-                "Exfiltration Zones",
-                "F. Reserve Spawn Zone",
-                "Armored Train",
-                new ConfigDescription("Choose which exfil on Reserve you want to spawn by",
-                new AcceptableValueList<string>(ExfilDescData.rezervbase.ToArray()),
-                new ConfigurationManagerAttributes { Order = 10 }));
-            GZ_Exfils = Config.Bind(
-                "Exfiltration Zones",
-                "G. Ground Zero Spawn Zone",
-                "Police Cordon V-Ex",
-                new ConfigDescription("Choose which exfil on Ground Zero you want to spawn by",
-                new AcceptableValueList<string>(ExfilDescData.sandbox.ToArray()),
-                new ConfigurationManagerAttributes { Order = 10 }));
-            Shoreline_Exfils = Config.Bind(
-                "Exfiltration Zones",
-                "H. Shoreline Spawn Zone",
-                "Road to North V-Ex",
-                new ConfigDescription("Choose which exfil on Shoreline you want to spawn by",
-                new AcceptableValueList<string>(ExfilDescData.shoreline.ToArray()),
-                new ConfigurationManagerAttributes { Order = 10 }));
-            Streets_Exfils = Config.Bind(
-                "Exfiltration Zones",
-                "I. Streets Spawn Zone",
-                "Courtyard",
-                new ConfigDescription("Choose which exfil on Streets you want to spawn by",
-                new AcceptableValueList<string>(ExfilDescData.tarkovstreets.ToArray()),
-                new ConfigurationManagerAttributes { Order = 10 }));
-            Woods_Exfils = Config.Bind(
-                "Exfiltration Zones",
-                "J. Woods Spawn Zone",
-                "Friendship Bridge (Co-Op)",
-                new ConfigDescription("Choose which exfil on Woods you want to spawn by",
-                new AcceptableValueList<string>(ExfilDescData.woods.ToArray()),
-                new ConfigurationManagerAttributes { Order = 10 }));
-
-            Factory_Exfils.SettingChanged += OnExfilsSettingChanged;
-            GZ_Exfils.SettingChanged += OnExfilsSettingChanged;
-            Interchange_Exfils.SettingChanged += OnExfilsSettingChanged;
-            Shoreline_Exfils.SettingChanged += OnExfilsSettingChanged;
-            Woods_Exfils.SettingChanged += OnExfilsSettingChanged;
-            Reserve_Exfils.SettingChanged += OnExfilsSettingChanged;
-            Lighthouse_Exfils.SettingChanged += OnExfilsSettingChanged;
-            Labs_Exfils.SettingChanged += OnExfilsSettingChanged;
-            Customs_Exfils.SettingChanged += OnExfilsSettingChanged;
-            Streets_Exfils.SettingChanged += OnExfilsSettingChanged;
-
-            useLastExfil.SettingChanged += onExfilSettingChanged;
-            chooseInfil.SettingChanged += onInfilSettingChanged;
-            LITentry.SettingChanged += onLITSettingChanged;
+                "LeaveItThere and/or HomeComforts have been detected.\n\n\"Spawn into your last exfil\" and \"Choose infil spawn\" will both be disabled if you use this option.");
         }
 
+        useLastExfil = Config.Bind(
+            "Core",
+            "A. Spawn into your last exfil?",
+            true,
+            "Toggle if you want to spawn where you last exfiltrated (if you go back to the same map)");
+        chooseInfil = Config.Bind(
+            "Core",
+            "B. Choose infil spawn?",
+            false,
+            "Toggle if you want to choose which exfil to spawn at.\n\nUse the map dropdown lists to select which exfiltration zone to infiltrate into (spawn at).");
+        wipePlayerData = Config.Bind(
+            "Core",
+            "C. Wipe saved exfil spawn data",
+            false,
+            "This will wipe all existing data for where you last exfiltrated on all maps.\n\nTHIS IS IRREVERSIBLE AND WILL HAPPEN INSTANTLY");
+
+        Customs_Exfils = Config.Bind(
+            "Exfiltration Zones",
+            "A. Customs Spawn Zone",
+            "ZB-013",
+            new ConfigDescription("Choose which exfil on Customs you want to spawn by",
+            new AcceptableValueList<string>(ExfilDescData.bigmap.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
+        Factory_Exfils = Config.Bind(
+            "Exfiltration Zones",
+            "B. Factory Spawn Zone",
+            "Cellars",
+            new ConfigDescription("Choose which exfil on Factory you want to spawn by",
+            new AcceptableValueList<string>(ExfilDescData.factory4_day.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
+        Interchange_Exfils = Config.Bind(
+            "Exfiltration Zones",
+            "C. Interchange Spawn Zone",
+            "Hole in the Fence",
+            new ConfigDescription("Choose which exfil on Interchange you want to spawn by",
+            new AcceptableValueList<string>(ExfilDescData.interchange.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
+        Labs_Exfils = Config.Bind(
+            "Exfiltration Zones",
+            "D. Labs Spawn Zone",
+            "Medical Block Elevator",
+            new ConfigDescription("Choose which exfil on Labs you want to spawn by",
+            new AcceptableValueList<string>(ExfilDescData.laboratory.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
+        Lighthouse_Exfils = Config.Bind(
+            "Exfiltration Zones",
+            "E. Lighthouse Spawn Zone",
+            "Armored Train",
+            new ConfigDescription("Choose which exfil on Lighthouse you want to spawn by",
+            new AcceptableValueList<string>(ExfilDescData.lighthouse.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
+        Reserve_Exfils = Config.Bind(
+            "Exfiltration Zones",
+            "F. Reserve Spawn Zone",
+            "Armored Train",
+            new ConfigDescription("Choose which exfil on Reserve you want to spawn by",
+            new AcceptableValueList<string>(ExfilDescData.rezervbase.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
+        GZ_Exfils = Config.Bind(
+            "Exfiltration Zones",
+            "G. Ground Zero Spawn Zone",
+            "Police Cordon V-Ex",
+            new ConfigDescription("Choose which exfil on Ground Zero you want to spawn by",
+            new AcceptableValueList<string>(ExfilDescData.sandbox.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
+        Shoreline_Exfils = Config.Bind(
+            "Exfiltration Zones",
+            "H. Shoreline Spawn Zone",
+            "Road to North V-Ex",
+            new ConfigDescription("Choose which exfil on Shoreline you want to spawn by",
+            new AcceptableValueList<string>(ExfilDescData.shoreline.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
+        Streets_Exfils = Config.Bind(
+            "Exfiltration Zones",
+            "I. Streets Spawn Zone",
+            "Courtyard",
+            new ConfigDescription("Choose which exfil on Streets you want to spawn by",
+            new AcceptableValueList<string>(ExfilDescData.tarkovstreets.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
+        Woods_Exfils = Config.Bind(
+            "Exfiltration Zones",
+            "J. Woods Spawn Zone",
+            "Friendship Bridge (Co-Op)",
+            new ConfigDescription("Choose which exfil on Woods you want to spawn by",
+            new AcceptableValueList<string>(ExfilDescData.woods.ToArray()),
+            new ConfigurationManagerAttributes { Order = 10 }));
+
+        Factory_Exfils.SettingChanged += OnExfilsSettingChanged;
+        GZ_Exfils.SettingChanged += OnExfilsSettingChanged;
+        Interchange_Exfils.SettingChanged += OnExfilsSettingChanged;
+        Shoreline_Exfils.SettingChanged += OnExfilsSettingChanged;
+        Woods_Exfils.SettingChanged += OnExfilsSettingChanged;
+        Reserve_Exfils.SettingChanged += OnExfilsSettingChanged;
+        Lighthouse_Exfils.SettingChanged += OnExfilsSettingChanged;
+        Labs_Exfils.SettingChanged += OnExfilsSettingChanged;
+        Customs_Exfils.SettingChanged += OnExfilsSettingChanged;
+        Streets_Exfils.SettingChanged += OnExfilsSettingChanged;
+
+        useLastExfil.SettingChanged += onExfilSettingChanged;
+        chooseInfil.SettingChanged += onInfilSettingChanged;
+        LITentry.SettingChanged += onLITSettingChanged;
     }
     private void onLITSettingChanged(object sender, EventArgs e)
     {
