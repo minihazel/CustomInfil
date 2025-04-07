@@ -22,6 +22,7 @@ public class Plugin : BaseUnityPlugin
 {
     internal static new ManualLogSource Logger;
     public static string currentEnv = Environment.CurrentDirectory; // main SPT dir
+    // ..\..\..\BepInEx\plugins\hazelify.UnlockedEntries\
 
     // HC & LIT compat
     public static bool isLITinstalled { get; private set; }
