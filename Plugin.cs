@@ -24,7 +24,7 @@ public class Plugin : BaseUnityPlugin
     public static MapPlayerManager playerManager = null;
     public static Dictionary<string, PlayerData> playerDataDictionary = null;
     public static Dictionary<string, List<SpawnpointsData>> spawnDataDictionary = null;
-    public static bool hasSpawned = true;
+    public static bool hasSpawned = false;
 
     public static ConfigEntry<string> Factory_Exfils;
     public static ConfigEntry<string> GZ_Exfils;

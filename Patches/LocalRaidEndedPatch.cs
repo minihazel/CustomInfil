@@ -8,8 +8,10 @@ using hazelify.CustomInfil.Data;
 using SPT.Reflection.Patching;
 using System;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Timers;
+using UnityEngine;
 using UnityEngine.Pool;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
@@ -91,20 +93,23 @@ namespace hazelify.CustomInfil.Patches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(ExfiltrationPoint), nameof(ExfiltrationPoint.OnPlayerExit));
+            return AccessTools.Method(typeof(ExfiltrationPoint), "IPhysicsTrigger.OnTriggerExit");
         }
 
         [PatchPrefix]
-        public static void PatchPrefix(ref ExfiltrationPoint __instance, ref Player obj)
+        public static void PatchPrefix(Collider col)
         {
-            if (__instance == null) return;
-            if (obj == null) return;
-            if (!Singleton<GameWorld>.Instantiated) return;
+            GameWorld gameWorld = Singleton<GameWorld>.Instance;
+            Player playerByCollider = gameWorld.GetPlayerByCollider(col);
 
             if (Plugin.hasSpawned)
             {
-                ExfiltrationControllerClass.Instance.BannedPlayers.Remove(obj.Id);
-                Plugin.hasSpawned = false;
+                if (playerByCollider == gameWorld.MainPlayer)
+                {
+                    ExfiltrationControllerClass.Instance.BannedPlayers.Remove(playerByCollider.Id);
+                    Plugin.logIssue("OnPlayerExit PatchPrefix -> Player exited the trigger", false);
+                    Plugin.hasSpawned = false;
+                }
             }
         }
     }

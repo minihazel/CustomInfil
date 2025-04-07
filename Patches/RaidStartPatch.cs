@@ -32,13 +32,13 @@ namespace hazelify.CustomInfil.Patches
         }
 
         [PatchPostfix]
-        private static void PatchPostfix(ref Player __instance)
+        private static void PatchPostfix(ref GameWorld __instance)
         {
             if (__instance == null) return;
-            var gameWorld = Singleton<GameWorld>.Instance;
-            Player player = gameWorld.MainPlayer;
+            Player player = __instance.MainPlayer;
+            if (player == null) return;
 
-            if (gameWorld.LocationId == null)
+            if (__instance.LocationId == null)
             {
                 Plugin.logIssue("GameWorld location is null", true);
                 return;
@@ -50,8 +50,8 @@ namespace hazelify.CustomInfil.Patches
 
             string selectedExfil = null;
             string translatedInternalSelectedExfil = null;
-            string currentLoc = gameWorld.LocationId.ToString().ToLower();
-            var exfilController = gameWorld.ExfiltrationController;
+            string currentLoc = __instance.LocationId.ToString().ToLower();
+            var exfilController = __instance.ExfiltrationController;
             var side = player.Side;
 
             if (!Plugin.chooseInfil.Value && Plugin.useLastExfil.Value)
@@ -82,7 +82,7 @@ namespace hazelify.CustomInfil.Patches
                     }
 
                     Plugin.hasSpawned = true;
-                    ExfiltrationControllerClass.Instance.BannedPlayers.Add(__instance.Id);
+                    ExfiltrationControllerClass.Instance.BannedPlayers.Add(player.Id);
 
                     player.Teleport(existingPos, true);
                     player.Rotate(existingRot);
