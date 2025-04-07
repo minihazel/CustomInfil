@@ -34,6 +34,12 @@ namespace hazelify.UnlockedEntries.Patches
         [PatchPostfix]
         private static void PatchPostfix(ref GameWorld __instance)
         {
+            if (Plugin.LITentry.Value)
+            {
+                Plugin.logIssue("OnGameStarted -> LeaveItThere / HomeComforts has been detected as installed, running patch like normal", false);
+                return;
+            }
+
             if (__instance == null) return;
             Player player = __instance.MainPlayer;
             if (player == null) return;
