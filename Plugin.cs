@@ -256,20 +256,21 @@ public class Plugin : BaseUnityPlugin
         }
     }
 
-    public void readPlayerDataFile()
+    public static void readPlayerDataFile()
     {
         playerDataFile = Path.Combine(currentEnv, "BepInEx", "plugins", "hazelify.UnlockedEntries", "PlayerData.json");
 
         if (playerDataFile == null)
         {
-            Logger.LogInfo("`playerDataFile` is null");
+            Logger.LogInfo("`playerDataFile` is null, regenerating");
+            MapPlayerManager.GeneratePlayerData(playerDataFile);
         }
         else
         {
             if (!File.Exists(playerDataFile))
             {
-                Logger.LogInfo("`playerDataFile` does not exist");
-                File.Create(playerDataFile).Close();
+                Logger.LogInfo("`playerDataFile` does not exist, regenerating");
+                MapPlayerManager.GeneratePlayerData(playerDataFile);
             }
             else
             {
@@ -324,14 +325,14 @@ public class Plugin : BaseUnityPlugin
         return null;
     }
 
-    public static void logIssue(string message, bool isError)
+    public static void logIssue(string message, bool logOnConsole)
     {
         message = "[UnlockedEntries] " + message;
 
-        ConsoleScreen.Log(message);
-        if (isError)
+        if (logOnConsole)
         {
             Logger.LogError(message);
+            ConsoleScreen.Log(message);
         }
         else
         {

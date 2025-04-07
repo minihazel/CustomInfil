@@ -40,7 +40,7 @@ namespace hazelify.UnlockedEntries.Patches
 
             if (__instance.LocationId == null)
             {
-                Plugin.logIssue("GameWorld location is null", true);
+                Plugin.logIssue("GameWorld location is null", false);
                 return;
             }
 
@@ -59,6 +59,14 @@ namespace hazelify.UnlockedEntries.Patches
                 if (Plugin.playerManager.DoesPlayerDataExist(currentLoc))
                 {
                     PlayerData existingPlayerData = Plugin.playerManager.GetPlayerData(currentLoc);
+
+                    string pId = existingPlayerData.ProfileId;
+                    if (pId != player.ProfileId)
+                    {
+                        Plugin.logIssue("RaidStartPatch -> PlayerData profile ID does not match current player ID. This is NOT an error. Use an EXFIL zone to update your player data!", false);
+                        return;
+                    }
+
                     float existingPosX = existingPlayerData.Position_X;
                     float existingPosY = existingPlayerData.Position_Y;
                     float existingPosZ = existingPlayerData.Position_Z;
@@ -66,26 +74,18 @@ namespace hazelify.UnlockedEntries.Patches
                     float existingRotX = existingPlayerData.Rotation_X;
                     float existingRotY = existingPlayerData.Rotation_Y;
 
-                    Plugin.logIssue("Float: " + existingRotY.ToString(), false);
-
-                    string stringedY = existingPosY.ToString("F6", CultureInfo.InvariantCulture);
-                    double doubledY = double.Parse(stringedY, CultureInfo.InvariantCulture);
-
-                    Plugin.logIssue("String: " + stringedY.ToString(), false);
-                    Plugin.logIssue("Double: " + doubledY.ToString(), false);
-
                     Vector3 existingPos = new Vector3(existingPosX, existingPosY, existingPosZ);
                     Vector2 existingRot = new Vector2(existingRotX, existingRotY);
 
                     if (existingPos == null)
                     {
-                        Plugin.logIssue("RaidStartPatch -> PlayerData position is null", true);
+                        Plugin.logIssue("RaidStartPatch -> PlayerData position is null", false);
                         return;
                     }
 
                     if (existingRot == null)
                     {
-                        Plugin.logIssue("RaidStartPatch -> PlayerData rotation is null", true);
+                        Plugin.logIssue("RaidStartPatch -> PlayerData rotation is null", false);
                         return;
                     }
 
@@ -335,7 +335,7 @@ namespace hazelify.UnlockedEntries.Patches
 
             if (closestSpawn == null)
             {
-                Plugin.logIssue("[UnlockedEntries] `ClosestSpawn` JObject was null", true);
+                Plugin.logIssue("[UnlockedEntries] `ClosestSpawn` JObject was null", false);
                 return;
             }
 
@@ -350,12 +350,12 @@ namespace hazelify.UnlockedEntries.Patches
 
             if (coords == null)
             {
-                Plugin.logIssue("[UnlockedEntries] Closest spawn coordinates were null", true);
+                Plugin.logIssue("[UnlockedEntries] Closest spawn coordinates were null", false);
                 return;
             }
             if (rotation == null)
             {
-                Plugin.logIssue("[UnlockedEntries] Closest spawn rotation was null", true);
+                Plugin.logIssue("[UnlockedEntries] Closest spawn rotation was null", false);
                 return;
             }
 
@@ -367,21 +367,19 @@ namespace hazelify.UnlockedEntries.Patches
             try
             {
                 player.Teleport(coords, true);
-                Plugin.logIssue("[UnlockedEntries] Teleported player successfully to: " + currentExfilCoords + " (" + detectedExfilName + ")", false);
             }
             catch (Exception ex)
             {
-                Plugin.logIssue("[UnlockedEntries] Player Teleport error: " + ex.Message.ToString(), true);
+                Plugin.logIssue("[UnlockedEntries] Player Teleport error: " + ex.Message.ToString(), false);
             }
 
             try
             {
                 player.Rotation = rotation;
-                Plugin.logIssue("[UnlockedEntries] Rotated player successfully to: " + rotation.ToString(), false);
             }
             catch (Exception ex)
             {
-                Plugin.logIssue("[UnlockedEntries] Player Rotation error: " + ex.Message.ToString(), true);
+                Plugin.logIssue("[UnlockedEntries] Player Rotation error: " + ex.Message.ToString(), false);
             }
         }
     }

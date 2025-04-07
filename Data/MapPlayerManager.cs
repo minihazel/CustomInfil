@@ -43,24 +43,42 @@ namespace hazelify.UnlockedEntries.Data
             }
             catch (Exception ex)
             {
-                Plugin.logIssue(ex.Message.ToString(), true);
+                Plugin.logIssue(ex.Message.ToString(), false);
             }
         }
 
         public static Dictionary<string, PlayerData> LoadPlayerData(string currentFile)
         {
-            if (!File.Exists(currentFile))
+            if (!File.Exists(currentFile) || Plugin.playerDataContent == null)
             {
-                Plugin.logIssue("PlayerData.json file not found, creating a new one.", true);
-                File.Create(currentFile).Close();
-                return new Dictionary<string, PlayerData>();
+                GeneratePlayerData(currentFile);
             }
-            if (Plugin.playerDataContent == null)
-            {
-                Plugin.logIssue("PlayerData.json content is null", true);
-                return new Dictionary<string, PlayerData>();
-            }
+
             return JsonConvert.DeserializeObject<Dictionary<string, PlayerData>>(Plugin.playerDataContent, jsonSettings);
+        }
+
+        public static void GeneratePlayerData(string currentFile)
+        {
+            Plugin.logIssue("PlayerData.json file not found, creating a new one.", false);
+            File.Create(currentFile).Close();
+
+            Dictionary<string, PlayerData> newPlayerData = new Dictionary<string, PlayerData>
+            {
+                {"factory4_day", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
+                {"factory4_night", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
+                {"bigmap", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
+                {"sandbox", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
+                {"rezervbase", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
+                {"shoreline", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
+                {"interchange", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
+                {"laboratory", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
+                {"tarkovstreets", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
+                {"lighthouse", new PlayerData("Unassigned", 0, 0, 0, 0, 0)}
+            };
+
+            string json = JsonConvert.SerializeObject(newPlayerData, jsonSettings);
+            File.WriteAllText(currentFile, json);
+            Plugin.readPlayerDataFile();
         }
 
 

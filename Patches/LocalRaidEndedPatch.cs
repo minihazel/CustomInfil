@@ -36,7 +36,7 @@ namespace hazelify.UnlockedEntries.Patches
 
             if (gameWorld.LocationId == null)
             {
-                Plugin.logIssue("GameWorld location is null", true);
+                Plugin.logIssue("GameWorld location is null", false);
                 return;
             }
 
@@ -44,12 +44,12 @@ namespace hazelify.UnlockedEntries.Patches
             Player player = gameWorld.MainPlayer;
             if (player == null)
             {
-                Plugin.logIssue("LocalRaidEndedPatch -> Player is null", true);
+                Plugin.logIssue("LocalRaidEndedPatch -> Player is null", false);
                 return;
             }
             if (currentLoc == null)
             {
-                Plugin.logIssue("LocalRaidEndedPatch -> currentLoc is null", true);
+                Plugin.logIssue("LocalRaidEndedPatch -> currentLoc is null", false);
                 return;
             }
 
@@ -60,7 +60,7 @@ namespace hazelify.UnlockedEntries.Patches
             Vector3 currentPlayerPosition = new Vector3(currentPlayerX, currentPlayerY, currentPlayerZ);
             if (currentPlayerPosition == null)
             {
-                Plugin.logIssue("LocalRaidEndedPatch -> currentPlayerPosition is null", true);
+                Plugin.logIssue("LocalRaidEndedPatch -> currentPlayerPosition is null", false);
                 return;
             }
 
@@ -71,21 +71,31 @@ namespace hazelify.UnlockedEntries.Patches
 
             if (currentPlayerRotation == null)
             {
-                Plugin.logIssue("LocalRaidEndedPatch -> currentPlayerRotation is null", true);
+                Plugin.logIssue("LocalRaidEndedPatch -> currentPlayerRotation is null", false);
                 return;
             }
 
             PlayerData playerData = Plugin.playerManager.GetPlayerData(gameWorld.LocationId);
             if (playerData == null)
             {
-                Plugin.logIssue("LocalRaidEndedPatch -> playerData is null", true);
+                Plugin.logIssue("LocalRaidEndedPatch -> playerData is null", false);
                 return;
             }
 
             if (player.ActiveHealthController.IsAlive)
             {
-                Plugin.playerManager.SetPlayerData(player.ProfileId, currentLoc, currentPlayerPosition, currentPlayerRotation);
                 string successMessage = $"Set player data of {player.ProfileId} to position {currentPlayerPosition} and rotation {currentPlayerRotation} on map " + currentLoc;
+                
+                if (!currentLoc.StartsWith("factory4"))
+                {
+                    Plugin.playerManager.SetPlayerData(player.ProfileId, currentLoc, currentPlayerPosition, currentPlayerRotation);
+                }
+                else
+                {
+                    Plugin.playerManager.SetPlayerData(player.ProfileId, "factory4_day", currentPlayerPosition, currentPlayerRotation);
+                    Plugin.playerManager.SetPlayerData(player.ProfileId, "factory4_night", currentPlayerPosition, currentPlayerRotation);
+                }
+
                 Plugin.logIssue(successMessage, false);
             }
         }
