@@ -117,7 +117,7 @@ namespace hazelify.UnlockedEntries.Patches
                     switch (player.Side)
                     {
                         case EPlayerSide.Savage:
-                            // selectedExfil = Plugin.Factory_Exfils_Scavs.Value.ToString();
+                            selectedExfil = Plugin.Factory_Exfils_Scavs.Value.ToString();
                             break;
                         default:
                             selectedExfil = Plugin.Factory_Exfils.Value.ToString();
@@ -128,7 +128,7 @@ namespace hazelify.UnlockedEntries.Patches
                     switch (player.Side)
                     {
                         case EPlayerSide.Savage:
-                            // selectedExfil = Plugin.Customs_Exfils_Scavs.Value.ToString();
+                            selectedExfil = Plugin.Customs_Exfils_Scavs.Value.ToString();
                             break;
                         default:
                             selectedExfil = Plugin.Customs_Exfils.Value.ToString();
@@ -161,7 +161,7 @@ namespace hazelify.UnlockedEntries.Patches
                     switch (player.Side)
                     {
                         case EPlayerSide.Savage:
-                            // selectedExfil = Plugin.Reserve_Exfils_Scavs.Value.ToString();
+                            selectedExfil = Plugin.Reserve_Exfils_Scavs.Value.ToString();
                             break;
                         default:
                             selectedExfil = Plugin.Reserve_Exfils.Value.ToString();
@@ -172,7 +172,7 @@ namespace hazelify.UnlockedEntries.Patches
                     switch (player.Side)
                     {
                         case EPlayerSide.Savage:
-                            // selectedExfil = Plugin.Lighthouse_Exfils_Scavs.Value.ToString();
+                            selectedExfil = Plugin.Lighthouse_Exfils_Scavs.Value.ToString();
                             break;
                         default:
                             selectedExfil = Plugin.Lighthouse_Exfils.Value.ToString();
@@ -183,7 +183,7 @@ namespace hazelify.UnlockedEntries.Patches
                     switch (player.Side)
                     {
                         case EPlayerSide.Savage:
-                            // selectedExfil = Plugin.Shoreline_Exfils_Scavs.Value.ToString();
+                            selectedExfil = Plugin.Shoreline_Exfils_Scavs.Value.ToString();
                             break;
                         default:
                             selectedExfil = Plugin.Shoreline_Exfils.Value.ToString();
@@ -194,7 +194,7 @@ namespace hazelify.UnlockedEntries.Patches
                     switch (player.Side)
                     {
                         case EPlayerSide.Savage:
-                            // selectedExfil = Plugin.Woods_Exfils_Scavs.Value.ToString();
+                            selectedExfil = Plugin.Woods_Exfils_Scavs.Value.ToString();
                             break;
                         default:
                             selectedExfil = Plugin.Woods_Exfils.Value.ToString();
@@ -205,7 +205,7 @@ namespace hazelify.UnlockedEntries.Patches
                     switch (player.Side)
                     {
                         case EPlayerSide.Savage:
-                            // selectedExfil = Plugin.Interchange_Exfils_Scavs.Value.ToString();
+                            selectedExfil = Plugin.Interchange_Exfils_Scavs.Value.ToString();
                             break;
                         default:
                             selectedExfil = Plugin.Interchange_Exfils.Value.ToString();
@@ -216,7 +216,7 @@ namespace hazelify.UnlockedEntries.Patches
                     switch (player.Side)
                     {
                         case EPlayerSide.Savage:
-                            // selectedExfil = Plugin.Streets_Exfils_Scavs.Value.ToString();
+                            selectedExfil = Plugin.Streets_Exfils_Scavs.Value.ToString();
                             break;
                         default:
                             selectedExfil = Plugin.Streets_Exfils.Value.ToString();
