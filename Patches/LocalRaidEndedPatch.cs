@@ -52,6 +52,9 @@ namespace hazelify.UnlockedEntries.Patches
                 return;
             }
 
+            var side = player.Side;
+            if (side == EPlayerSide.Savage) return;
+
             float currentPlayerX = __instance.Position.x;
             float currentPlayerY = __instance.Position.y;
             float currentPlayerZ = __instance.Position.z;
@@ -111,6 +114,11 @@ namespace hazelify.UnlockedEntries.Patches
         private static void PatchPrefix(Collider col)
         {
             GameWorld gameWorld = Singleton<GameWorld>.Instance;
+            Player player = gameWorld.MainPlayer;
+            if (player == null) return;
+            var side = player.Side;
+            if (side == EPlayerSide.Savage) return;
+
             Player playerByCollider = gameWorld.GetPlayerByCollider(col);
 
             if (Plugin.hasSpawned)
