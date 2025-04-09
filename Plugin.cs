@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Security;
 using static EFT.SpeedTree.TreeWind;
 
@@ -105,6 +106,16 @@ public class Plugin : BaseUnityPlugin
 
         if (isLITInstalled)
         {
+            var fields = typeof(ExfilData).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            foreach (var field in fields)
+            {
+                if (field.FieldType == typeof(List<string>))
+                {
+                    var list = (List<string>)field.GetValue(null);
+                    list.Insert(0, "homecomforts_safehouse");
+                }
+            }
+
             LITmodEntry = Config.Bind(
                 "1. HomeComforts detected - Use Last Exfil disabled.",
                 "Mod detected",
@@ -133,7 +144,7 @@ public class Plugin : BaseUnityPlugin
             "ZB-013",
             new ConfigDescription("Choose which exfil on Customs you want to spawn by",
             new AcceptableValueList<string>(ExfilDescData.bigmap.ToArray()),
-            new ConfigurationManagerAttributes { Order = 10 }));/*
+            new ConfigurationManagerAttributes { Order = 10 }));
         Customs_Exfils_Scavs = Config.Bind(
             "A. Customs",
             "B. Customs Scav Spawn Zone",
@@ -141,7 +152,6 @@ public class Plugin : BaseUnityPlugin
             new ConfigDescription("Choose which exfil on Customs you want to spawn by as a Scav",
             new AcceptableValueList<string>(ExfilDescData.bigmap_scav.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
-        */
 
         Factory_Exfils = Config.Bind(
             "B. Factory",
@@ -149,15 +159,14 @@ public class Plugin : BaseUnityPlugin
             "Cellars",
             new ConfigDescription("Choose which exfil on Factory you want to spawn by",
             new AcceptableValueList<string>(ExfilDescData.factory4_day.ToArray()),
-            new ConfigurationManagerAttributes { Order = 10 }));/*
+            new ConfigurationManagerAttributes { Order = 10 }));
         Factory_Exfils_Scavs = Config.Bind(
             "B. Factory",
             "B. Factory Scav Spawn Zone",
-            "Camera Bunker Door",
+            "Cellars",
             new ConfigDescription("Choose which exfil on Factory you want to spawn by as a Scav",
             new AcceptableValueList<string>(ExfilDescData.factory4_day_scav.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
-        */
 
         Interchange_Exfils = Config.Bind(
             "C. Interchange",
@@ -165,7 +174,7 @@ public class Plugin : BaseUnityPlugin
             "Hole in the Fence",
             new ConfigDescription("Choose which exfil on Interchange you want to spawn by",
             new AcceptableValueList<string>(ExfilDescData.interchange.ToArray()),
-            new ConfigurationManagerAttributes { Order = 10 }));/*
+            new ConfigurationManagerAttributes { Order = 10 }));
         Interchange_Exfils_Scavs = Config.Bind(
             "C. Interchange",
             "B. Interchange Scav Spawn Zone",
@@ -173,7 +182,6 @@ public class Plugin : BaseUnityPlugin
             new ConfigDescription("Choose which exfil on Interchange you want to spawn by as a Scav",
             new AcceptableValueList<string>(ExfilDescData.interchange_scav.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
-        */
 
         Lighthouse_Exfils = Config.Bind(
             "D. Lighthouse",
@@ -181,7 +189,7 @@ public class Plugin : BaseUnityPlugin
             "Armored Train",
             new ConfigDescription("Choose which exfil on Lighthouse you want to spawn by",
             new AcceptableValueList<string>(ExfilDescData.lighthouse.ToArray()),
-            new ConfigurationManagerAttributes { Order = 10 }));/*
+            new ConfigurationManagerAttributes { Order = 10 }));
         Lighthouse_Exfils_Scavs = Config.Bind(
             "D. Lighthouse",
             "B. Lighthouse Scav Spawn Zone",
@@ -189,7 +197,6 @@ public class Plugin : BaseUnityPlugin
             new ConfigDescription("Choose which exfil on Lighthouse you want to spawn by as a Scav",
             new AcceptableValueList<string>(ExfilDescData.lighthouse_scav.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
-        */
 
         Reserve_Exfils = Config.Bind(
             "E. Reserve",
@@ -197,7 +204,7 @@ public class Plugin : BaseUnityPlugin
             "Armored Train",
             new ConfigDescription("Choose which exfil on Reserve you want to spawn by",
             new AcceptableValueList<string>(ExfilDescData.rezervbase.ToArray()),
-            new ConfigurationManagerAttributes { Order = 10 }));/*
+            new ConfigurationManagerAttributes { Order = 10 }));
         Reserve_Exfils_Scavs = Config.Bind(
             "E. Reserve",
             "B. Reserve Scav Spawn Zone",
@@ -205,7 +212,6 @@ public class Plugin : BaseUnityPlugin
             new ConfigDescription("Choose which exfil on Reserve you want to spawn by as a Scav",
             new AcceptableValueList<string>(ExfilDescData.rezervbase_scav.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
-        */
 
         GZ_Exfils = Config.Bind(
             "F. Ground Zero",
@@ -213,23 +219,22 @@ public class Plugin : BaseUnityPlugin
             "Police Cordon V-Ex",
             new ConfigDescription("Choose which exfil on Ground Zero you want to spawn by",
             new AcceptableValueList<string>(ExfilDescData.sandbox.ToArray()),
-            new ConfigurationManagerAttributes { Order = 10 }));/*
+            new ConfigurationManagerAttributes { Order = 10 }));
         GZ_Exfils_Scavs = Config.Bind(
             "F. Ground Zero",
             "B. Ground Zero Scav Spawn Zone",
-            "Scav Checkpoint (Co-op)",
+            "Emercom Checkpoint",
             new ConfigDescription("Choose which exfil on Ground Zero you want to spawn by as a Scav",
             new AcceptableValueList<string>(ExfilDescData.sandbox_scav.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
-        */
-
+        
         Shoreline_Exfils = Config.Bind(
             "G. Shoreline",
             "A. Shoreline Spawn Zone",
             "Road to North V-Ex",
             new ConfigDescription("Choose which exfil on Shoreline you want to spawn by",
             new AcceptableValueList<string>(ExfilDescData.shoreline.ToArray()),
-            new ConfigurationManagerAttributes { Order = 10 }));/*
+            new ConfigurationManagerAttributes { Order = 10 }));
         Shoreline_Exfils_Scavs = Config.Bind(
             "G. Shoreline",
             "B. Shoreline Scav Spawn Zone",
@@ -237,7 +242,6 @@ public class Plugin : BaseUnityPlugin
             new ConfigDescription("Choose which exfil on Shoreline you want to spawn by as a Scav",
             new AcceptableValueList<string>(ExfilDescData.shoreline_scav.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
-        */
 
         Streets_Exfils = Config.Bind(
             "H. Streets of Tarkov",
@@ -245,7 +249,7 @@ public class Plugin : BaseUnityPlugin
             "Courtyard",
             new ConfigDescription("Choose which exfil on Streets you want to spawn by",
             new AcceptableValueList<string>(ExfilDescData.tarkovstreets.ToArray()),
-            new ConfigurationManagerAttributes { Order = 10 }));/*
+            new ConfigurationManagerAttributes { Order = 10 }));
         Streets_Exfils_Scavs = Config.Bind(
             "H. Streets of Tarkov",
             "B. Streets Scav Spawn Zone",
@@ -253,7 +257,6 @@ public class Plugin : BaseUnityPlugin
             new ConfigDescription("Choose which exfil on Streets you want to spawn by as a Scav",
             new AcceptableValueList<string>(ExfilDescData.tarkovstreets_scav.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
-        */
 
         Woods_Exfils = Config.Bind(
             "I. Woods",
@@ -261,7 +264,7 @@ public class Plugin : BaseUnityPlugin
             "Friendship Bridge (Co-Op)",
             new ConfigDescription("Choose which exfil on Woods you want to spawn by",
             new AcceptableValueList<string>(ExfilDescData.woods.ToArray()),
-            new ConfigurationManagerAttributes { Order = 10 }));/*
+            new ConfigurationManagerAttributes { Order = 10 }));
         Woods_Exfils_Scavs = Config.Bind(
             "I. Woods",
             "B. Woods Scav Spawn Zone",
@@ -269,7 +272,6 @@ public class Plugin : BaseUnityPlugin
             new ConfigDescription("Choose which exfil on Woods you want to spawn by as a Scav",
             new AcceptableValueList<string>(ExfilDescData.woods_scav.ToArray()),
             new ConfigurationManagerAttributes { Order = 10 }));
-        */
 
         Labs_Exfils = Config.Bind(
             "K. Laboratory",
@@ -428,7 +430,11 @@ public class Plugin : BaseUnityPlugin
 
         if (field != null)
         {
-            return field.GetValue(null) as List<string>;
+            var originalList = field.GetValue(null) as List<string>;
+            if (originalList != null)
+            {
+                return originalList.Select(s => s.ToLower()).ToList();
+            }
         }
 
         return null;

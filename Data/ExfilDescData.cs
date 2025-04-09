@@ -8,35 +8,39 @@ namespace hazelify.UnlockedEntries.Data
         public static readonly List<string> factory4_day = new List<string>
         {
             "Cellars",
+            "Gate 3",
             "Gate 0",
             "Med Tent Gate",
-            "Courtyard Gate",
-            "Gate 3"
+            "Courtyard Gate"
         };
         public static readonly List<string> factory4_day_scav = new List<string>
         {
             "Cellars",
+            "Gate 3",
             "Gate 0",
             "Med Tent Gate",
             "Courtyard Gate",
-            "Gate 3"
+            "Camera Bunker Door",
+            "Office Window"
         };
 
         public static readonly List<string> factory4_night = new List<string>
         {
             "Cellars",
+            "Gate 3",
             "Gate 0",
             "Med Tent Gate",
-            "Courtyard Gate",
-            "Gate 3"
+            "Courtyard Gate"
         };
         public static readonly List<string> factory4_night_scav = new List<string>
         {
             "Cellars",
+            "Gate 3",
             "Gate 0",
             "Med Tent Gate",
             "Courtyard Gate",
-            "Gate 3"
+            "Camera Bunker Door",
+            "Office Window"
         };
 
         public static readonly List<string> bigmap = new List<string>
@@ -73,12 +77,31 @@ namespace hazelify.UnlockedEntries.Data
 
         public static readonly List<string> sandbox = new List<string>
         {
-            "Police Cordon V-Ex"
+            "Police Cordon V-Ex",
+            "Emercom Checkpoint",
+            "Scav Checkpoint (Co-op)",
+            "Nakatani Basement Stairs",
+            "Mira Ave (Flare)"
         };
         public static readonly List<string> sandbox_scav = new List<string>
         {
-            "Scav Checkpoint (Co-op)",
             "Emercom Checkpoint",
+            "Scav Checkpoint (Co-op)",
+            "Nakatani Basement Stairs"
+        };
+
+        public static readonly List<string> sandbox_high = new List<string>
+        {
+            "Police Cordon V-Ex",
+            "Emercom Checkpoint",
+            "Scav Checkpoint (Co-op)",
+            "Nakatani Basement Stairs",
+            "Mira Ave (Flare)"
+        };
+        public static readonly List<string> sandbox_high_scav = new List<string>
+        {
+            "Emercom Checkpoint",
+            "Scav Checkpoint (Co-op)",
             "Nakatani Basement Stairs"
         };
 

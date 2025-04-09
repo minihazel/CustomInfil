@@ -106,7 +106,7 @@ namespace hazelify.UnlockedEntries.Patches
                     switch (player.Side)
                     {
                         case EPlayerSide.Savage:
-                            // selectedExfil = Plugin.Factory_Exfils_Scavs.Value.ToString();
+                            selectedExfil = Plugin.Factory_Exfils_Scavs.Value.ToString();
                             break;
                         default:
                             selectedExfil = Plugin.Factory_Exfils.Value.ToString();
@@ -139,7 +139,18 @@ namespace hazelify.UnlockedEntries.Patches
                     switch (player.Side)
                     {
                         case EPlayerSide.Savage:
-                            // selectedExfil = Plugin.GZ_Exfils_Scavs.Value.ToString();
+                            selectedExfil = Plugin.GZ_Exfils_Scavs.Value.ToString();
+                            break;
+                        default:
+                            selectedExfil = Plugin.GZ_Exfils.Value.ToString();
+                            break;
+                    }
+                    break;
+                case "sandbox_high":
+                    switch (player.Side)
+                    {
+                        case EPlayerSide.Savage:
+                            selectedExfil = Plugin.GZ_Exfils_Scavs.Value.ToString();
                             break;
                         default:
                             selectedExfil = Plugin.GZ_Exfils.Value.ToString();
@@ -218,9 +229,21 @@ namespace hazelify.UnlockedEntries.Patches
             }
 
             // CODE ACTUALLY STARTS HERE
-            translatedInternalSelectedExfil = ExfilLookup.GetInternalName(currentLoc, selectedExfil);
+
+            switch (player.Side)
+            {
+                case EPlayerSide.Savage:
+                    translatedInternalSelectedExfil = ExfilLookup.GetInternalName(currentLoc + "_scav", selectedExfil).ToLower();
+                    break;
+                default:
+                    translatedInternalSelectedExfil = ExfilLookup.GetInternalName(currentLoc, selectedExfil).ToLower();
+                    break;
+            }
+
+            ConsoleScreen.Log(translatedInternalSelectedExfil);
             List<ExfiltrationPoint> points = [];
             List<SpawnpointsData> currentMap = Plugin.spawnDataDictionary[currentLoc];
+
             JObject closestSpawn = null;
 
             string detectedExfilName = null;
@@ -231,124 +254,127 @@ namespace hazelify.UnlockedEntries.Patches
             switch (player.Side)
             {
                 case EPlayerSide.Savage:
-                    // points.AddRange(exfilController.ExfiltrationPoints);
-                    // points.AddRange(exfilController.ScavExfiltrationPoints);
-                    break;
-                default:
                     points.AddRange(exfilController.ExfiltrationPoints);
                     points.AddRange(exfilController.ScavExfiltrationPoints);
                     break;
+                default:
+                    points.AddRange(exfilController.ExfiltrationPoints);
+                    break;
             }
 
-            if (player.Side == (EPlayerSide)EPlayerSideMask.Pmc)
+            foreach (var foundExfil in points)
             {
-                foreach (var foundExfil in points)
+                string _Name = foundExfil.Settings.Name.ToString().ToLower();
+                ConsoleScreen.Log(_Name);
+                string _Id = foundExfil.Settings.Id.ToString();
+                List<string> currentMapExfils = new List<string>();
+
+                switch (player.Side)
                 {
-                    string _Name = foundExfil.Settings.Name.ToString().ToLower();
-                    string _Id = foundExfil.Settings.Id.ToString();
-                    List<string> currentMapExfils = Plugin.GetExfilList(currentLoc);
-
-                    if (currentMapExfils == null)
-                    {
-                        Plugin.logIssue("[UnlockedEntries] `currentMapExfils` was null", false);
-                        return;
-                    }
-
-                    if (currentMapExfils.Contains(_Name))
-                    {
-                        if (string.IsNullOrEmpty(translatedInternalSelectedExfil)) return;
-                        if (_Name == translatedInternalSelectedExfil)
-                        {
-                            float _X = foundExfil.transform.position.x;
-                            float _Y = foundExfil.transform.position.y;
-                            float _Z = foundExfil.transform.position.z;
-
-                            currentExfilPosition = new Vector3(_X, _Y, _Z);
-                            detectedExfilName = _Name.ToString();
-                            break;
-                        }
-                    }
+                    case EPlayerSide.Savage:
+                        currentMapExfils = Plugin.GetExfilList(currentLoc + "_scav");
+                        break;
+                    default:
+                        currentMapExfils = Plugin.GetExfilList(currentLoc);
+                        break;
                 }
 
-                foreach (var spawnPoint in currentMap)
+                if (currentMapExfils == null)
                 {
-                    string spawnName = (string)spawnPoint.Name;
-
-                    spawnpoint_vec = new Vector3(
-                        (float)spawnPoint.coord_X,
-                        (float)spawnPoint.coord_Y,
-                        (float)spawnPoint.coord_Z);
-
-                    float distance = Vector3.Distance(currentExfilPosition, spawnpoint_vec);
-
-                    JObject newSpawnpoint = new JObject
-                    {
-                        ["Name"] = spawnName,
-                        ["Id"] = spawnPoint.Id,
-                        ["Infiltration"] = spawnPoint.Infiltration,
-                        ["Rotation_X"] = spawnPoint.Rotation_X,
-                        ["Rotation_Y"] = spawnPoint.Rotation_Y,
-                        ["Rotation_Z"] = spawnPoint.Rotation_Z,
-                        ["coord_X"] = spawnPoint.coord_X,
-                        ["coord_Y"] = spawnPoint.coord_Y,
-                        ["coord_Z"] = spawnPoint.coord_Z
-                    };
-
-                    if (distance < closestDistance)
-                    {
-                        closestDistance = distance;
-                        closestSpawn = newSpawnpoint;
-                    }
-                }
-
-                if (closestSpawn == null)
-                {
-                    Plugin.logIssue("[UnlockedEntries] `ClosestSpawn` JObject was null", false);
+                    Plugin.logIssue("[UnlockedEntries] `currentMapExfils` was null", false);
                     return;
                 }
 
-                Vector3 coords = new Vector3(
-                    (float)closestSpawn["coord_X"],
-                    (float)closestSpawn["coord_Y"],
-                    (float)closestSpawn["coord_Z"]);
+                if (currentMapExfils.Contains(_Name) && translatedInternalSelectedExfil == _Name)
+                {
+                    float _X = foundExfil.transform.position.x;
+                    float _Y = foundExfil.transform.position.y;
+                    float _Z = foundExfil.transform.position.z;
 
-                Vector2 rotation = new Vector2(
-                    (float)closestSpawn["Rotation_X"],
-                    (float)closestSpawn["Rotation_Z"]);
+                    currentExfilPosition = new Vector3(_X, _Y, _Z);
+                    detectedExfilName = _Name.ToString();
+                    break;
+                }
+            }
 
-                if (coords == null)
-                {
-                    Plugin.logIssue("[UnlockedEntries] Closest spawn coordinates were null", false);
-                    return;
-                }
-                if (rotation == null)
-                {
-                    Plugin.logIssue("[UnlockedEntries] Closest spawn rotation was null", false);
-                    return;
-                }
+            foreach (var spawnPoint in currentMap)
+            {
+                string spawnName = (string)spawnPoint.Name;
 
-                string currentExfilCoords =
-                    " X: " + currentExfilPosition.x.ToString() +
-                    " Y: " + currentExfilPosition.y.ToString() +
-                    " Z: " + currentExfilPosition.z.ToString();
+                spawnpoint_vec = new Vector3(
+                    (float)spawnPoint.coord_X,
+                    (float)spawnPoint.coord_Y,
+                    (float)spawnPoint.coord_Z);
 
-                try
-                {
-                    player.Teleport(coords, true);
-                }
-                catch (Exception ex)
-                {
-                    Plugin.logIssue("[UnlockedEntries] Player Teleport error: " + ex.Message.ToString(), false);
-                }
+                float distance = Vector3.Distance(currentExfilPosition, spawnpoint_vec);
 
-                try
+                JObject newSpawnpoint = new JObject
                 {
-                    player.Rotation = rotation;
-                }
-                catch (Exception ex)
+                    ["Name"] = spawnName,
+                    ["Id"] = spawnPoint.Id,
+                    ["Infiltration"] = spawnPoint.Infiltration,
+                    ["Rotation_X"] = spawnPoint.Rotation_X,
+                    ["Rotation_Y"] = spawnPoint.Rotation_Y,
+                    ["Rotation_Z"] = spawnPoint.Rotation_Z,
+                    ["coord_X"] = spawnPoint.coord_X,
+                    ["coord_Y"] = spawnPoint.coord_Y,
+                    ["coord_Z"] = spawnPoint.coord_Z
+                };
+
+                if (distance < closestDistance)
                 {
-                    Plugin.logIssue("[UnlockedEntries] Player Rotation error: " + ex.Message.ToString(), false);
+                    closestDistance = distance;
+                    closestSpawn = newSpawnpoint;
                 }
+            }
+
+            if (closestSpawn == null)
+            {
+                Plugin.logIssue("[UnlockedEntries] `ClosestSpawn` JObject was null", false);
+                return;
+            }
+
+            Vector3 coords = new Vector3(
+                (float)closestSpawn["coord_X"],
+                (float)closestSpawn["coord_Y"],
+                (float)closestSpawn["coord_Z"]);
+
+            Vector2 rotation = new Vector2(
+                (float)closestSpawn["Rotation_X"],
+                (float)closestSpawn["Rotation_Z"]);
+
+            if (coords == null)
+            {
+                Plugin.logIssue("[UnlockedEntries] Closest spawn coordinates were null", false);
+                return;
+            }
+            if (rotation == null)
+            {
+                Plugin.logIssue("[UnlockedEntries] Closest spawn rotation was null", false);
+                return;
+            }
+
+            string currentExfilCoords =
+                " X: " + currentExfilPosition.x.ToString() +
+                " Y: " + currentExfilPosition.y.ToString() +
+                " Z: " + currentExfilPosition.z.ToString();
+
+            try
+            {
+                player.Teleport(coords, true);
+            }
+            catch (Exception ex)
+            {
+                Plugin.logIssue("[UnlockedEntries] Player Teleport error: " + ex.Message.ToString(), false);
+            }
+
+            try
+            {
+                player.Rotation = rotation;
+            }
+            catch (Exception ex)
+            {
+                Plugin.logIssue("[UnlockedEntries] Player Rotation error: " + ex.Message.ToString(), false);
             }
         }
     }

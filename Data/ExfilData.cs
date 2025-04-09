@@ -8,38 +8,38 @@ namespace hazelify.UnlockedEntries.Data
         public static readonly List<string> factory4_day = new List<string>
         {
             "Cellars",
+            "Gate 3",
             "Gate 0",
             "Gate m",
-            "Gate_o",
-            "Gate 3"
+            "Gate_o"
         };
         public static readonly List<string> factory4_day_scav = new List<string>
         {
             "Cellars",
+            "Gate 3",
             "Gate 0",
             "Gate m",
             "Gate_o",
-            "Camera Bunker Gate",
-            "Gate 3",
+            "Camera Bunker Door",
             "Office Window"
         };
 
         public static readonly List<string> factory4_night = new List<string>
         {
             "Cellars",
+            "Gate 3",
             "Gate 0",
             "Gate m",
-            "Gate_o",
-            "Gate 3"
+            "Gate_o"
         };
         public static readonly List<string> factory4_night_scav = new List<string>
         {
             "Cellars",
+            "Gate 3",
             "Gate 0",
             "Gate m",
             "Gate_o",
-            "Camera Bunker Gate",
-            "Gate 3",
+            "Camera Bunker Door",
             "Office Window"
         };
 
@@ -76,12 +76,31 @@ namespace hazelify.UnlockedEntries.Data
 
         public static readonly List<string> sandbox = new List<string>
         {
-            "Sandbox_VExit"
+            "Sandbox_VExit",
+            "Unity_free_exit",
+            "Scav_coop_exit",
+            "Nakatani_stairs_free_exit",
+            "sniper_exit"
         };
         public static readonly List<string> sandbox_scav = new List<string>
         {
-            "Scav_coop_exit",
             "Unity_free_exit",
+            "Scav_coop_exit",
+            "Nakatani_stairs_free_exit"
+        };
+
+        public static readonly List<string> sandbox_high = new List<string>
+        {
+            "Sandbox_VExit",
+            "Unity_free_exit",
+            "Scav_coop_exit",
+            "Nakatani_stairs_free_exit",
+            "sniper_exit"
+        };
+        public static readonly List<string> sandbox_high_scav = new List<string>
+        {
+            "Unity_free_exit",
+            "Scav_coop_exit",
             "Nakatani_stairs_free_exit"
         };
 
