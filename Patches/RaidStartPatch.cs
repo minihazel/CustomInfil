@@ -240,7 +240,6 @@ namespace hazelify.UnlockedEntries.Patches
                     break;
             }
 
-            ConsoleScreen.Log(translatedInternalSelectedExfil);
             List<ExfiltrationPoint> points = [];
             List<SpawnpointsData> currentMap = Plugin.spawnDataDictionary[currentLoc];
 
@@ -265,7 +264,6 @@ namespace hazelify.UnlockedEntries.Patches
             foreach (var foundExfil in points)
             {
                 string _Name = foundExfil.Settings.Name.ToString().ToLower();
-                ConsoleScreen.Log(_Name);
                 string _Id = foundExfil.Settings.Id.ToString();
                 List<string> currentMapExfils = new List<string>();
 

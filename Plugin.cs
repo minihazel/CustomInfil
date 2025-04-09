@@ -106,25 +106,7 @@ public class Plugin : BaseUnityPlugin
 
         if (isLITInstalled)
         {
-            var datafields = typeof(ExfilData).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-            foreach (var field in datafields)
-            {
-                if (field.FieldType == typeof(List<string>))
-                {
-                    var list = (List<string>)field.GetValue(null);
-                    list.Insert(0, "homecomforts_safehouse");
-                }
-            }
-
-            var datadescfields = typeof(ExfilDescData).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-            foreach (var field in datadescfields)
-            {
-                if (field.FieldType == typeof(List<string>))
-                {
-                    var list = (List<string>)field.GetValue(null);
-                    list.Insert(0, "Home Comforts Safehouse");
-                }
-            }
+            addHCSupport();
 
             LITmodEntry = Config.Bind(
                 "1. HomeComforts detected - Use Last Exfil disabled.",
@@ -132,6 +114,7 @@ public class Plugin : BaseUnityPlugin
                 true,
                 "All this means is that toggling \"Spawn into your last exfil\" will do nothing, you will always spawn at your HomeComforts safehouse.");
         }
+
         useLastExfil = Config.Bind(
             "2. Core",
             "A. Spawn into your last exfil?",
@@ -304,6 +287,78 @@ public class Plugin : BaseUnityPlugin
 
         useLastExfil.SettingChanged += onExfilSettingChanged;
         chooseInfil.SettingChanged += onInfilSettingChanged;
+    }
+
+    private void addHCSupport()
+    {
+        ExfilDescData.factory4_day.Add("Home Comforts Safehouse");
+        ExfilDescData.factory4_day_scav.Add("Home Comforts Safehouse");
+        ExfilDescData.factory4_night.Add("Home Comforts Safehouse");
+        ExfilDescData.factory4_night_scav.Add("Home Comforts Safehouse");
+
+        ExfilDescData.bigmap.Add("Home Comforts Safehouse");
+        ExfilDescData.bigmap_scav.Add("Home Comforts Safehouse");
+
+        ExfilDescData.sandbox.Add("Home Comforts Safehouse");
+        ExfilDescData.sandbox_scav.Add("Home Comforts Safehouse");
+
+        ExfilDescData.sandbox_high.Add("Home Comforts Safehouse");
+        ExfilDescData.sandbox_high_scav.Add("Home Comforts Safehouse");
+
+        ExfilDescData.rezervbase.Add("Home Comforts Safehouse");
+        ExfilDescData.rezervbase_scav.Add("Home Comforts Safehouse");
+
+        ExfilDescData.lighthouse.Add("Home Comforts Safehouse");
+        ExfilDescData.lighthouse_scav.Add("Home Comforts Safehouse");
+
+        ExfilDescData.shoreline.Add("Home Comforts Safehouse");
+        ExfilDescData.shoreline_scav.Add("Home Comforts Safehouse");
+
+        ExfilDescData.woods.Add("Home Comforts Safehouse");
+        ExfilDescData.woods_scav.Add("Home Comforts Safehouse");
+
+        ExfilDescData.interchange.Add("Home Comforts Safehouse");
+        ExfilDescData.interchange_scav.Add("Home Comforts Safehouse");
+
+        ExfilDescData.tarkovstreets.Add("Home Comforts Safehouse");
+        ExfilDescData.tarkovstreets_scav.Add("Home Comforts Safehouse");
+
+        ExfilDescData.laboratory.Add("Home Comforts Safehouse");
+
+
+        ExfilData.factory4_day.Add("homecomforts_safehouse");
+        ExfilData.factory4_day_scav.Add("homecomforts_safehouse");
+        ExfilData.factory4_night.Add("homecomforts_safehouse");
+        ExfilData.factory4_night_scav.Add("homecomforts_safehouse");
+
+        ExfilData.bigmap.Add("homecomforts_safehouse");
+        ExfilData.bigmap_scav.Add("homecomforts_safehouse");
+
+        ExfilData.sandbox.Add("homecomforts_safehouse");
+        ExfilData.sandbox_scav.Add("homecomforts_safehouse");
+
+        ExfilData.sandbox_high.Add("homecomforts_safehouse");
+        ExfilData.sandbox_high_scav.Add("homecomforts_safehouse");
+
+        ExfilData.rezervbase.Add("homecomforts_safehouse");
+        ExfilData.rezervbase_scav.Add("homecomforts_safehouse");
+
+        ExfilData.lighthouse.Add("homecomforts_safehouse");
+        ExfilData.lighthouse_scav.Add("homecomforts_safehouse");
+
+        ExfilData.shoreline.Add("homecomforts_safehouse");
+        ExfilData.shoreline_scav.Add("homecomforts_safehouse");
+
+        ExfilData.woods.Add("homecomforts_safehouse");
+        ExfilData.woods_scav.Add("homecomforts_safehouse");
+
+        ExfilData.interchange.Add("homecomforts_safehouse");
+        ExfilData.interchange_scav.Add("homecomforts_safehouse");
+
+        ExfilData.tarkovstreets.Add("homecomforts_safehouse");
+        ExfilData.tarkovstreets_scav.Add("homecomforts_safehouse");
+
+        ExfilData.laboratory.Add("homecomforts_safehouse");
     }
 
     private void OnExfilDropdownSettingChanged(object sender, EventArgs e)
