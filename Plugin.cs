@@ -106,13 +106,23 @@ public class Plugin : BaseUnityPlugin
 
         if (isLITInstalled)
         {
-            var fields = typeof(ExfilData).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-            foreach (var field in fields)
+            var datafields = typeof(ExfilData).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            foreach (var field in datafields)
             {
                 if (field.FieldType == typeof(List<string>))
                 {
                     var list = (List<string>)field.GetValue(null);
                     list.Insert(0, "homecomforts_safehouse");
+                }
+            }
+
+            var datadescfields = typeof(ExfilDescData).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            foreach (var field in datadescfields)
+            {
+                if (field.FieldType == typeof(List<string>))
+                {
+                    var list = (List<string>)field.GetValue(null);
+                    list.Insert(0, "Home Comforts Safehouse");
                 }
             }
 

@@ -5,7 +5,7 @@ namespace hazelify.UnlockedEntries.Data
 {
     public static class ExfilDescData
     {
-        public static readonly List<string> factory4_day = new List<string>
+        public static List<string> factory4_day = new List<string>
         {
             "Cellars",
             "Gate 3",
@@ -13,7 +13,7 @@ namespace hazelify.UnlockedEntries.Data
             "Med Tent Gate",
             "Courtyard Gate"
         };
-        public static readonly List<string> factory4_day_scav = new List<string>
+        public static List<string> factory4_day_scav = new List<string>
         {
             "Cellars",
             "Gate 3",
@@ -24,7 +24,7 @@ namespace hazelify.UnlockedEntries.Data
             "Office Window"
         };
 
-        public static readonly List<string> factory4_night = new List<string>
+        public static List<string> factory4_night = new List<string>
         {
             "Cellars",
             "Gate 3",
@@ -32,7 +32,7 @@ namespace hazelify.UnlockedEntries.Data
             "Med Tent Gate",
             "Courtyard Gate"
         };
-        public static readonly List<string> factory4_night_scav = new List<string>
+        public static List<string> factory4_night_scav = new List<string>
         {
             "Cellars",
             "Gate 3",
@@ -43,7 +43,7 @@ namespace hazelify.UnlockedEntries.Data
             "Office Window"
         };
 
-        public static readonly List<string> bigmap = new List<string>
+        public static List<string> bigmap = new List<string>
         {
             "ZB-013",
             "Dorms V-Ex",
@@ -54,7 +54,7 @@ namespace hazelify.UnlockedEntries.Data
             "RUAF Roadblock"
         };
 
-        public static readonly List<string> bigmap_scav = new List<string>
+        public static List<string> bigmap_scav = new List<string>
         {
             "Military Base CP",
             "Passage Between Rocks",
@@ -75,7 +75,7 @@ namespace hazelify.UnlockedEntries.Data
             "Boiler Room Basement (Co-op)"
         };
 
-        public static readonly List<string> sandbox = new List<string>
+        public static List<string> sandbox = new List<string>
         {
             "Police Cordon V-Ex",
             "Emercom Checkpoint",
@@ -83,14 +83,14 @@ namespace hazelify.UnlockedEntries.Data
             "Nakatani Basement Stairs",
             "Mira Ave (Flare)"
         };
-        public static readonly List<string> sandbox_scav = new List<string>
+        public static List<string> sandbox_scav = new List<string>
         {
             "Emercom Checkpoint",
             "Scav Checkpoint (Co-op)",
             "Nakatani Basement Stairs"
         };
 
-        public static readonly List<string> sandbox_high = new List<string>
+        public static List<string> sandbox_high = new List<string>
         {
             "Police Cordon V-Ex",
             "Emercom Checkpoint",
@@ -98,14 +98,14 @@ namespace hazelify.UnlockedEntries.Data
             "Nakatani Basement Stairs",
             "Mira Ave (Flare)"
         };
-        public static readonly List<string> sandbox_high_scav = new List<string>
+        public static List<string> sandbox_high_scav = new List<string>
         {
             "Emercom Checkpoint",
             "Scav Checkpoint (Co-op)",
             "Nakatani Basement Stairs"
         };
 
-        public static readonly List<string> rezervbase = new List<string>
+        public static List<string> rezervbase = new List<string>
         {
             "Armored Train",
             "D-2 Bunker",
@@ -114,7 +114,7 @@ namespace hazelify.UnlockedEntries.Data
             "Scav Lands (Co-Op)",
             "Sewer Manhole"
         };
-        public static readonly List<string> rezervbase_scav = new List<string>
+        public static List<string> rezervbase_scav = new List<string>
         {
             "Hole in the Wall by the Mountains",
             "Heating Pipe",
@@ -122,7 +122,7 @@ namespace hazelify.UnlockedEntries.Data
             "Checkpoint Fence"
         };
 
-        public static readonly List<string> lighthouse = new List<string>
+        public static List<string> lighthouse = new List<string>
         {
             "Armored Train",
             "Road to Military Base V-Ex",
@@ -132,7 +132,7 @@ namespace hazelify.UnlockedEntries.Data
             "Northern Checkpoint",
             "Southern Road"
         };
-        public static readonly List<string> lighthouse_scav = new List<string>
+        public static List<string> lighthouse_scav = new List<string>
         {
             "Side Tunnel (Co-Op)",
             "Path to Shoreline",
@@ -142,7 +142,7 @@ namespace hazelify.UnlockedEntries.Data
             "Industrial Zone Gates"
         };
 
-        public static readonly List<string> shoreline = new List<string>
+        public static List<string> shoreline = new List<string>
         {
             "Road to North V-Ex",
             "Road to Customs",
@@ -152,7 +152,7 @@ namespace hazelify.UnlockedEntries.Data
             "Pier Boat",
             "Climber's Trail"
         };
-        public static readonly List<string> shoreline_scav = new List<string>
+        public static List<string> shoreline_scav = new List<string>
         {
             "Road to Customs",
             "Lighthouse",
@@ -162,7 +162,7 @@ namespace hazelify.UnlockedEntries.Data
             "Smugglers' Path (Co-op)"
         };
 
-        public static readonly List<string> woods = new List<string>
+        public static List<string> woods = new List<string>
         {
             "Friendship Bridge (Co-Op)",
             "RUAF Gate",
@@ -173,7 +173,7 @@ namespace hazelify.UnlockedEntries.Data
             "Bridge V-Ex",
             "Outskirts"
         };
-        public static readonly List<string> woods_scav = new List<string>
+        public static List<string> woods_scav = new List<string>
         {
             "Northern UN Roadblock",
             "Power Line Passage (Flare)",
@@ -186,20 +186,20 @@ namespace hazelify.UnlockedEntries.Data
             "Old Railway Depot"
         };
 
-        public static readonly List<string> interchange = new List<string>
+        public static List<string> interchange = new List<string>
         {
             "Hole in the Fence",
             "Saferoom Exfil",
             "Power Station V-Ex"
         };
-        public static readonly List<string> interchange_scav = new List<string>
+        public static List<string> interchange_scav = new List<string>
         {
             "Emercom Checkpoint",
             "Railway Exfil",
             "Scav Camp (Co-Op)"
         };
 
-        public static readonly List<string> tarkovstreets = new List<string>
+        public static List<string> tarkovstreets = new List<string>
         {
             "Courtyard",
             "Primorsky Ave Taxi V-Ex",
@@ -212,7 +212,7 @@ namespace hazelify.UnlockedEntries.Data
             "Klimov Street (Flare)",
             "Expo Checkpoint"
         };
-        public static readonly List<string> tarkovstreets_scav = new List<string>
+        public static List<string> tarkovstreets_scav = new List<string>
         {
             "Entrance to Catacombs",
             "Ventilation Shaft",
@@ -223,7 +223,7 @@ namespace hazelify.UnlockedEntries.Data
             "Pinewood Basement (Co-Op)"
         };
 
-        public static readonly List<string> laboratory = new List<string>
+        public static List<string> laboratory = new List<string>
         {
             "Medical Block Elevator",
             "Cargo Elevator",
