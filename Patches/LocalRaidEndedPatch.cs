@@ -131,4 +131,32 @@ namespace hazelify.UnlockedEntries.Patches
             }
         }
     }
+
+    public class OnPlayerEnter : ModulePatch
+    {
+        protected override MethodBase GetTargetMethod()
+        {
+            return AccessTools.Method(typeof(ExfiltrationPoint), "IPhysicsTrigger.OnTriggerEnter");
+        }
+
+        [PatchPrefix]
+        private static void PatchPrefix(Collider col)
+        {
+            GameWorld gameWorld = Singleton<GameWorld>.Instance;
+            Player player = gameWorld.MainPlayer;
+            if (player == null) return;
+            var side = player.Side;
+            if (side == EPlayerSide.Savage) return;
+
+            Player playerByCollider = gameWorld.GetPlayerByCollider(col);
+
+            if (Plugin.hasSpawned)
+            {
+                if (playerByCollider == gameWorld.MainPlayer)
+                {
+                    ExfiltrationControllerClass.Instance.BannedPlayers.Add(playerByCollider.Id);
+                }
+            }
+        }
+    }
 }

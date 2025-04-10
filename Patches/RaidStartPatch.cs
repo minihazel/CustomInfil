@@ -356,15 +356,7 @@ namespace hazelify.UnlockedEntries.Patches
                 " X: " + currentExfilPosition.x.ToString() +
                 " Y: " + currentExfilPosition.y.ToString() +
                 " Z: " + currentExfilPosition.z.ToString();
-
-            try
-            {
-                player.Teleport(coords, true);
-            }
-            catch (Exception ex)
-            {
-                Plugin.logIssue("[UnlockedEntries] Player Teleport error: " + ex.Message.ToString(), false);
-            }
+            Plugin.hasSpawned = true;
 
             try
             {
@@ -373,6 +365,15 @@ namespace hazelify.UnlockedEntries.Patches
             catch (Exception ex)
             {
                 Plugin.logIssue("[UnlockedEntries] Player Rotation error: " + ex.Message.ToString(), false);
+            }
+
+            try
+            {
+                player.Teleport(coords, true);
+            }
+            catch (Exception ex)
+            {
+                Plugin.logIssue("[UnlockedEntries] Player Teleport error: " + ex.Message.ToString(), false);
             }
         }
     }
