@@ -2,18 +2,11 @@
 using UnlockedEntries;
 using EFT;
 using EFT.Interactive;
-using EFT.UI.BattleTimer;
 using HarmonyLib;
 using hazelify.UnlockedEntries.Data;
 using SPT.Reflection.Patching;
-using System;
-using System.Globalization;
-using System.Linq;
-using System.Numerics;
 using System.Reflection;
-using System.Timers;
 using UnityEngine;
-using UnityEngine.Pool;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
