@@ -70,6 +70,7 @@ namespace hazelify.UnlockedEntries.Data
                 {"sandbox", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
                 {"rezervbase", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
                 {"shoreline", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
+                {"woods", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
                 {"interchange", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
                 {"laboratory", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
                 {"tarkovstreets", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
