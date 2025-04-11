@@ -34,6 +34,14 @@ namespace hazelify.UnlockedEntries.Patches
         [PatchPostfix]
         private static void PatchPostfix(ref GameWorld __instance)
         {
+            if (Plugin.debug_exfildumper.Value || Plugin.debug_spawndumper.Value)
+            {
+                Plugin.logIssue("One or more debug options are enabled, disabling core patch modifications", false);
+                Plugin.debug_exfildumper.Value = false;
+                Plugin.debug_spawndumper.Value = false;
+                return;
+            }
+
             if (__instance == null) return;
             Player player = __instance.MainPlayer;
             if (player == null) return;
@@ -50,7 +58,7 @@ namespace hazelify.UnlockedEntries.Patches
             var exfilController = __instance.ExfiltrationController;
             var side = player.Side;
 
-            if (!Plugin.chooseInfil.Value && Plugin.useLastExfil.Value)
+            if (Plugin.useLastExfil.Value)
             {
                 if (Plugin.isLITInstalled)
                 {
@@ -99,6 +107,11 @@ namespace hazelify.UnlockedEntries.Patches
                 }
                 return;
             };
+            if (!Plugin.chooseInfil.Value)
+            {
+                Plugin.logIssue("RaidStartPatch -> `Choose Infil` disabled, skipping", false);
+                return;
+            }
 
             switch (currentLoc)
             {
@@ -310,7 +323,6 @@ namespace hazelify.UnlockedEntries.Patches
                 {
                     ["Name"] = spawnName,
                     ["Id"] = spawnPoint.Id,
-                    ["Infiltration"] = spawnPoint.Infiltration,
                     ["Rotation_X"] = spawnPoint.Rotation_X,
                     ["Rotation_Y"] = spawnPoint.Rotation_Y,
                     ["Rotation_Z"] = spawnPoint.Rotation_Z,

@@ -113,6 +113,14 @@ namespace hazelify.UnlockedEntries.Patches
         [PatchPrefix]
         private static void PatchPrefix(Collider col)
         {
+            if (Plugin.debug_exfildumper.Value || Plugin.debug_spawndumper.Value)
+            {
+                Plugin.logIssue("One or more debug options are enabled, disabling core patch modifications", false);
+                Plugin.debug_exfildumper.Value = false;
+                Plugin.debug_spawndumper.Value = false;
+                return;
+            }
+
             GameWorld gameWorld = Singleton<GameWorld>.Instance;
             Player player = gameWorld.MainPlayer;
             if (player == null) return;
@@ -142,6 +150,13 @@ namespace hazelify.UnlockedEntries.Patches
         [PatchPrefix]
         private static void PatchPrefix(Collider col)
         {
+            if (Plugin.debug_exfildumper.Value || Plugin.debug_spawndumper.Value)
+            {
+                Plugin.logIssue("One or more debug options are enabled, disabling core patch modifications", false);
+                Plugin.debug_exfildumper.Value = false;
+                Plugin.debug_spawndumper.Value = false;
+                return;
+            }
             GameWorld gameWorld = Singleton<GameWorld>.Instance;
             Player player = gameWorld.MainPlayer;
             if (player == null) return;

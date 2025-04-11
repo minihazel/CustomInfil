@@ -80,6 +80,9 @@ public class Plugin : BaseUnityPlugin
     public static JObject playerDataObj = null;
 
     // config options
+    public static ConfigEntry<bool> debug_exfildumper;
+    public static ConfigEntry<bool> debug_spawndumper;
+
     public static ConfigEntry<string> usedExfil;
     public static ConfigEntry<bool> useLastExfil;
     public static ConfigEntry<bool> chooseInfil;
@@ -103,6 +106,7 @@ public class Plugin : BaseUnityPlugin
         new RaidStartPatch().Enable();
         new LocalRaidEndedPatch().Enable();
         new OnPlayerExit().Enable();
+        new ExfilDumper().Enable();
 
         if (isLITInstalled)
         {
@@ -115,6 +119,23 @@ public class Plugin : BaseUnityPlugin
                 "All this means is that toggling \"Spawn into your last exfil\" will do nothing, you will always spawn at your HomeComforts safehouse.");
         }
 
+        debug_exfildumper = Config.Bind(
+            "2. Core",
+            "A. Dump Map Exfils",
+            false,
+            new ConfigDescription("Debug option: If you wish to dump all the exfiltration zones from the map you enter next. This option will disable itself once you spawn in.\n\n" +
+            "Dumped info will be saved into: hazelify.UnlockedEntries\\debug_exfils.json",
+                null,
+                new ConfigurationManagerAttributes { IsAdvanced = true }));
+        debug_spawndumper = Config.Bind(
+            "2. Core",
+            "B. Dump Map Spawns",
+            false,
+            new ConfigDescription("Debug option: If you wish to dump all the spawnpoints from the map you enter next. This option will disable itself once you spawn in.\n\n" +
+            "Dumped info will be saved into: hazelify.UnlockedEntries\\spawnpoints.json",
+                null,
+                new ConfigurationManagerAttributes { IsAdvanced = true }));
+
         useLastExfil = Config.Bind(
             "2. Core",
             "A. Spawn into your last exfil?",
@@ -124,7 +145,7 @@ public class Plugin : BaseUnityPlugin
             "2. Core",
             "B. Choose infil spawn?",
             false,
-            "Toggle if you want to choose which exfil to spawn at.\n\nUse the map dropdown lists to select which exfiltration zone to infiltrate into (spawn at).");
+            "Toggle if you want to choose which exfil to spawn at.\n\nUse the map dropdown lists to select which exfiltration zone to infiltrate into (spawn at).\n\nWARNING! This may not work unless you have all exfils opened via SVM or another mod.");
         wipePlayerData = Config.Bind(
             "2. Core",
             "C. Wipe saved exfil spawn data",
@@ -390,17 +411,21 @@ public class Plugin : BaseUnityPlugin
         }
     }
 
-    public void readSpawnpointsFile()
+    public static void readSpawnpointsFile()
     {
         spawnpointsFile = Path.Combine(currentEnv, "BepInEx", "plugins", "hazelify.UnlockedEntries", "spawnpoints.json");
         if (spawnpointsFile == null)
         {
+            File.Create(spawnpointsFile).Close();
+            File.WriteAllText(spawnpointsFile, "{}");
             Logger.LogInfo("`spawnpointsFile` is null");
         }
         else
         {
             if (!File.Exists(spawnpointsFile))
             {
+                File.Create(spawnpointsFile).Close();
+                File.WriteAllText(spawnpointsFile, "{}");
                 Logger.LogInfo("`spawnpointsFile` does not exist");
             }
             else
