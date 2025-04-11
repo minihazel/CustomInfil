@@ -107,6 +107,7 @@ public class Plugin : BaseUnityPlugin
         new LocalRaidEndedPatch().Enable();
         new OnPlayerExit().Enable();
         new ExfilDumper().Enable();
+        new SpawnpointDumper().Enable();
 
         if (isLITInstalled)
         {
