@@ -40,7 +40,18 @@ namespace hazelify.UnlockedEntries.Patches
             }
 
             string currentLoc = gameWorld.LocationId.ToString();
-            Player player = __instance;
+            Player player = null;
+
+            for (int i = 0; i < gameWorld.RegisteredPlayers.Count; i++)
+            {
+                string pNickname = gameWorld.RegisteredPlayers[i].Profile.Nickname;
+                if (!pNickname.ToLower().StartsWith("headless_"))
+                {
+                    player = gameWorld.RegisteredPlayers[i] as Player;
+                    break;
+                }
+            }
+
             if (player == null)
             {
                 Plugin.logIssue("LocalRaidEndedPatch -> Player is null", false);
@@ -55,9 +66,9 @@ namespace hazelify.UnlockedEntries.Patches
             var side = player.Side;
             if (side == EPlayerSide.Savage) return;
 
-            float currentPlayerX = __instance.Position.x;
-            float currentPlayerY = __instance.Position.y;
-            float currentPlayerZ = __instance.Position.z;
+            float currentPlayerX = player.Position.x;
+            float currentPlayerY = player.Position.y;
+            float currentPlayerZ = player.Position.z;
 
             Vector3 currentPlayerPosition = new Vector3(currentPlayerX, currentPlayerY, currentPlayerZ);
             if (currentPlayerPosition == null)
@@ -66,8 +77,8 @@ namespace hazelify.UnlockedEntries.Patches
                 return;
             }
 
-            float currentPlayerRotationX = __instance.Rotation.x;
-            float currentPlayerRotationY = __instance.Rotation.y;
+            float currentPlayerRotationX = player.Rotation.x;
+            float currentPlayerRotationY = player.Rotation.y;
 
             Vector2 currentPlayerRotation = new Vector2(currentPlayerRotationX, currentPlayerRotationY);
 
