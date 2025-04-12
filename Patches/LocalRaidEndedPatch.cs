@@ -16,6 +16,7 @@ using UnityEngine;
 using UnityEngine.Pool;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
+using EFT.UI;
 
 namespace hazelify.UnlockedEntries.Patches
 {
@@ -39,77 +40,80 @@ namespace hazelify.UnlockedEntries.Patches
                 return;
             }
 
-            string currentLoc = gameWorld.LocationId.ToString();
-            Player player = null;
+            string currentLoc = gameWorld.LocationId.ToString().ToLower();
+            PlayerData existingPlayerData = Plugin.playerManager.GetPlayerData(currentLoc);
 
-            for (int i = 0; i < gameWorld.RegisteredPlayers.Count; i++)
+            if (existingPlayerData == null)
             {
-                string pNickname = gameWorld.RegisteredPlayers[i].Profile.Nickname;
-                if (!pNickname.ToLower().StartsWith("headless_"))
+                Plugin.logIssue("LocalRaidEndedPatch -> `existingPlayerData` is null", false);
+                return;
+            }
+
+            string pId = existingPlayerData.ProfileId;
+            foreach (Player registeredPlayer in gameWorld.RegisteredPlayers)
+            {
+                if (registeredPlayer.ProfileId == pId && !registeredPlayer.Profile.Nickname.ToLower().StartsWith("headless_"))
                 {
-                    player = gameWorld.RegisteredPlayers[i] as Player;
+                    Player player = registeredPlayer;
+
+                    if (player == null)
+                    {
+                        Plugin.logIssue("LocalRaidEndedPatch -> Player is null", false);
+                        return;
+                    }
+                    if (currentLoc == null)
+                    {
+                        Plugin.logIssue("LocalRaidEndedPatch -> currentLoc is null", false);
+                        return;
+                    }
+
+                    var side = player.Side;
+                    if (side == EPlayerSide.Savage) return;
+
+                    float currentPlayerX = player.Position.x;
+                    float currentPlayerY = player.Position.y;
+                    float currentPlayerZ = player.Position.z;
+
+                    Vector3 currentPlayerPosition = new Vector3(currentPlayerX, currentPlayerY, currentPlayerZ);
+                    if (currentPlayerPosition == null)
+                    {
+                        Plugin.logIssue("LocalRaidEndedPatch -> currentPlayerPosition is null", false);
+                        return;
+                    }
+
+                    float currentPlayerRotationX = player.Rotation.x;
+                    float currentPlayerRotationY = player.Rotation.y;
+
+                    Vector2 currentPlayerRotation = new Vector2(currentPlayerRotationX, currentPlayerRotationY);
+
+                    if (currentPlayerRotation == null)
+                    {
+                        Plugin.logIssue("LocalRaidEndedPatch -> currentPlayerRotation is null", false);
+                        return;
+                    }
+
+
+                    if (player.ActiveHealthController.IsAlive)
+                    {
+                        string successMessage = $"Set player data of {player.ProfileId} to position {currentPlayerPosition} and rotation {currentPlayerRotation} on map " + currentLoc;
+
+                        if (!Plugin.playerManager.DoesPlayerDataExist(currentLoc))
+                            Plugin.logIssue("LocalRaidEndedPatch -> `PlayerData` has no entry for location " + currentLoc + ", creating one", false);
+
+                        if (!currentLoc.ToLower().StartsWith("factory4"))
+                        {
+                            Plugin.playerManager.SetPlayerData(player.ProfileId, currentLoc, currentPlayerPosition, currentPlayerRotation);
+                        }
+                        else
+                        {
+                            Plugin.playerManager.SetPlayerData(player.ProfileId, "factory4_day", currentPlayerPosition, currentPlayerRotation);
+                            Plugin.playerManager.SetPlayerData(player.ProfileId, "factory4_night", currentPlayerPosition, currentPlayerRotation);
+                        }
+
+                        Plugin.logIssue(successMessage, false);
+                    }
                     break;
                 }
-            }
-
-            if (player == null)
-            {
-                Plugin.logIssue("LocalRaidEndedPatch -> Player is null", false);
-                return;
-            }
-            if (currentLoc == null)
-            {
-                Plugin.logIssue("LocalRaidEndedPatch -> currentLoc is null", false);
-                return;
-            }
-
-            var side = player.Side;
-            if (side == EPlayerSide.Savage) return;
-
-            float currentPlayerX = player.Position.x;
-            float currentPlayerY = player.Position.y;
-            float currentPlayerZ = player.Position.z;
-
-            Vector3 currentPlayerPosition = new Vector3(currentPlayerX, currentPlayerY, currentPlayerZ);
-            if (currentPlayerPosition == null)
-            {
-                Plugin.logIssue("LocalRaidEndedPatch -> currentPlayerPosition is null", false);
-                return;
-            }
-
-            float currentPlayerRotationX = player.Rotation.x;
-            float currentPlayerRotationY = player.Rotation.y;
-
-            Vector2 currentPlayerRotation = new Vector2(currentPlayerRotationX, currentPlayerRotationY);
-
-            if (currentPlayerRotation == null)
-            {
-                Plugin.logIssue("LocalRaidEndedPatch -> currentPlayerRotation is null", false);
-                return;
-            }
-
-            PlayerData playerData = Plugin.playerManager.GetPlayerData(gameWorld.LocationId);
-            if (playerData == null)
-            {
-                Plugin.logIssue("LocalRaidEndedPatch -> playerData is null", false);
-                return;
-            }
-
-            if (player.ActiveHealthController.IsAlive)
-            {
-                string successMessage = $"Set player data of {player.ProfileId} to position {currentPlayerPosition} and rotation {currentPlayerRotation} on map " + currentLoc;
-                
-                if (!currentLoc.StartsWith("factory4"))
-                {
-                    Plugin.playerManager.SetPlayerData(player.ProfileId, currentLoc, currentPlayerPosition, currentPlayerRotation);
-                }
-                else
-                {
-                    Plugin.playerManager.SetPlayerData(player.ProfileId, "factory4_day", currentPlayerPosition, currentPlayerRotation);
-                    Plugin.playerManager.SetPlayerData(player.ProfileId, "factory4_night", currentPlayerPosition, currentPlayerRotation);
-                }
-
-                Plugin.logIssue(successMessage, false);
             }
         }
     }

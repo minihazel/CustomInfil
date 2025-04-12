@@ -69,6 +69,7 @@ namespace hazelify.UnlockedEntries.Data
                 {"factory4_night", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
                 {"bigmap", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
                 {"sandbox", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
+                {"sandbox_high", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
                 {"rezervbase", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
                 {"shoreline", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
                 {"woods", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
