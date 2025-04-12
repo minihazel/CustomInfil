@@ -41,8 +41,10 @@ namespace hazelify.UnlockedEntries.Patches
 
             ExfiltrationPoint[] exfils = gameWorld.ExfiltrationController.ScavExfiltrationPoints;
             ExfiltrationPoint[] pmcexfils = gameWorld.ExfiltrationController.ExfiltrationPoints;
+            ExfiltrationPoint[] tryExfils = gameWorld.ExfiltrationController.SecretExfiltrationPoints;
 
-            ExfiltrationPoint[] allExfils = exfils.Concat(pmcexfils).ToArray();
+            ExfiltrationPoint[] mergeTwo = pmcexfils.Concat(tryExfils).ToArray();
+            ExfiltrationPoint[] mergeSecrets = mergeTwo.Concat(tryExfils).ToArray();
 
             if (!File.Exists(mapFile))
             {
@@ -61,15 +63,21 @@ namespace hazelify.UnlockedEntries.Patches
                 return;
             }
 
-            if (allExfils == null)
+            if (mergeTwo == null)
             {
-                ConsoleScreen.Log("ExfilDumper -> `allExfils` was null");
+                ConsoleScreen.Log("ExfilDumper -> `mergeTwo` was null");
                 return;
             }
 
-            for (int i = 0; i < allExfils.Length; i++)
+            if (mergeSecrets == null)
             {
-                string _Name = allExfils[i].Settings.Name.ToString();
+                ConsoleScreen.Log("ExfilDumper -> `mergeSecrets` was null");
+                return;
+            }
+
+            for (int i = 0; i < mergeSecrets.Length; i++)
+            {
+                string _Name = mergeSecrets[i].Settings.Name.ToString();
 
                 string content = File.ReadAllText(mapFile);
                 JObject data = JObject.Parse(content);
