@@ -271,6 +271,7 @@ namespace hazelify.UnlockedEntries.Patches
                     break;
                 default:
                     points.AddRange(exfilController.ExfiltrationPoints);
+                    points.AddRange(exfilController.SecretExfiltrationPoints);
                     break;
             }
 
