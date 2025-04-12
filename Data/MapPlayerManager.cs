@@ -40,6 +40,7 @@ namespace hazelify.UnlockedEntries.Data
             try
             {
                 File.WriteAllText(Plugin.playerDataFile, json);
+                Plugin.logIssue("SavePlayerData -> Success, saved player data into file `PlayerData.json`", false);
             }
             catch (Exception ex)
             {

@@ -72,7 +72,27 @@ namespace hazelify.UnlockedEntries.Patches
                     string pId = existingPlayerData.ProfileId;
                     if (pId != player.ProfileId)
                     {
-                        Plugin.logIssue("RaidStartPatch -> PlayerData profile ID does not match current player ID. This is NOT an error. Use an EXFIL zone to update your player data!", false);
+                        Plugin.logIssue("RaidStartPatch -> PlayerData profile ID does not match current player ID, assigning with default values. Use an exfil zone to update data!", false);
+
+                        Vector3 currentPlayerPosition = new Vector3(0, 0, 0);
+                        Vector2 currentPlayerRotation = new Vector2(0, 0);
+
+                        string successMessage = $"Profile Id did not exist, but entry did; saving profile Id into file for all locations";
+
+                        Plugin.playerManager.SetPlayerData(player.ProfileId, "factory4_day", currentPlayerPosition, currentPlayerRotation);
+                        Plugin.playerManager.SetPlayerData(player.ProfileId, "factory4_night", currentPlayerPosition, currentPlayerRotation);
+                        Plugin.playerManager.SetPlayerData(player.ProfileId, "bigmap", currentPlayerPosition, currentPlayerRotation);
+                        Plugin.playerManager.SetPlayerData(player.ProfileId, "sandbox", currentPlayerPosition, currentPlayerRotation);
+                        Plugin.playerManager.SetPlayerData(player.ProfileId, "sandbox_high", currentPlayerPosition, currentPlayerRotation);
+                        Plugin.playerManager.SetPlayerData(player.ProfileId, "rezervbase", currentPlayerPosition, currentPlayerRotation);
+                        Plugin.playerManager.SetPlayerData(player.ProfileId, "lighthouse", currentPlayerPosition, currentPlayerRotation);
+                        Plugin.playerManager.SetPlayerData(player.ProfileId, "shoreline", currentPlayerPosition, currentPlayerRotation);
+                        Plugin.playerManager.SetPlayerData(player.ProfileId, "woods", currentPlayerPosition, currentPlayerRotation);
+                        Plugin.playerManager.SetPlayerData(player.ProfileId, "interchange", currentPlayerPosition, currentPlayerRotation);
+                        Plugin.playerManager.SetPlayerData(player.ProfileId, "tarkovstreets", currentPlayerPosition, currentPlayerRotation);
+                        Plugin.playerManager.SetPlayerData(player.ProfileId, "laboratory", currentPlayerPosition, currentPlayerRotation);
+                        Plugin.logIssue(successMessage, false);
+
                         return;
                     }
 

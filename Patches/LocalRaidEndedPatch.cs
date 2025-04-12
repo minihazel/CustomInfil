@@ -40,7 +40,7 @@ namespace hazelify.UnlockedEntries.Patches
             }
 
             string currentLoc = gameWorld.LocationId.ToString();
-            Player player = gameWorld.MainPlayer;
+            Player player = __instance;
             if (player == null)
             {
                 Plugin.logIssue("LocalRaidEndedPatch -> Player is null", false);
@@ -100,6 +100,46 @@ namespace hazelify.UnlockedEntries.Patches
 
                 Plugin.logIssue(successMessage, false);
             }
+        }
+    }
+
+    public class postDestroyPatch : ModulePatch
+    {
+        protected override MethodBase GetTargetMethod()
+        {
+            return AccessTools.Method(typeof(Player), nameof(Player.OnDestroy));
+        }
+
+        [PatchPostfix]
+        private void PatchPostfix(ref Player __instance)
+        {
+            if (__instance == null) return;
+            var gameWorld = Singleton<GameWorld>.Instance;
+            if (gameWorld == null) return;
+
+            if (gameWorld.LocationId == null)
+            {
+                Plugin.logIssue("GameWorld location is null", false);
+                return;
+            }
+
+            string currentLoc = gameWorld.LocationId.ToString();
+            Player player = __instance;
+            if (player == null)
+            {
+                Plugin.logIssue("LocalRaidEndedPatch -> Player is null", false);
+                return;
+            }
+            if (currentLoc == null)
+            {
+                Plugin.logIssue("LocalRaidEndedPatch -> currentLoc is null", false);
+                return;
+            }
+
+            var side = player.Side;
+            if (side == EPlayerSide.Savage) return;
+
+            Plugin.hasSpawned = true;
         }
     }
 
