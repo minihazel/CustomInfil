@@ -79,18 +79,7 @@ namespace hazelify.UnlockedEntries.Patches
 
                         string successMessage = $"Profile Id did not exist, but entry did; saving profile Id into file for all locations";
 
-                        Plugin.playerManager.SetPlayerData(player.ProfileId, "factory4_day", currentPlayerPosition, currentPlayerRotation);
-                        Plugin.playerManager.SetPlayerData(player.ProfileId, "factory4_night", currentPlayerPosition, currentPlayerRotation);
-                        Plugin.playerManager.SetPlayerData(player.ProfileId, "bigmap", currentPlayerPosition, currentPlayerRotation);
-                        Plugin.playerManager.SetPlayerData(player.ProfileId, "sandbox", currentPlayerPosition, currentPlayerRotation);
-                        Plugin.playerManager.SetPlayerData(player.ProfileId, "sandbox_high", currentPlayerPosition, currentPlayerRotation);
-                        Plugin.playerManager.SetPlayerData(player.ProfileId, "rezervbase", currentPlayerPosition, currentPlayerRotation);
-                        Plugin.playerManager.SetPlayerData(player.ProfileId, "lighthouse", currentPlayerPosition, currentPlayerRotation);
-                        Plugin.playerManager.SetPlayerData(player.ProfileId, "shoreline", currentPlayerPosition, currentPlayerRotation);
-                        Plugin.playerManager.SetPlayerData(player.ProfileId, "woods", currentPlayerPosition, currentPlayerRotation);
-                        Plugin.playerManager.SetPlayerData(player.ProfileId, "interchange", currentPlayerPosition, currentPlayerRotation);
-                        Plugin.playerManager.SetPlayerData(player.ProfileId, "tarkovstreets", currentPlayerPosition, currentPlayerRotation);
-                        Plugin.playerManager.SetPlayerData(player.ProfileId, "laboratory", currentPlayerPosition, currentPlayerRotation);
+                        Plugin.playerManager.SetPlayerData(player.ProfileId, currentLoc, currentPlayerPosition, currentPlayerRotation);
                         Plugin.logIssue(successMessage, false);
 
                         return;
