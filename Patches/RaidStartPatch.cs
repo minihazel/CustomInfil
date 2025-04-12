@@ -369,7 +369,6 @@ namespace hazelify.UnlockedEntries.Patches
                 " X: " + currentExfilPosition.x.ToString() +
                 " Y: " + currentExfilPosition.y.ToString() +
                 " Z: " + currentExfilPosition.z.ToString();
-            Plugin.hasSpawned = true;
 
             try
             {
@@ -382,6 +381,7 @@ namespace hazelify.UnlockedEntries.Patches
 
             try
             {
+                Plugin.hasSpawned = true;
                 player.Teleport(coords, true);
             }
             catch (Exception ex)
