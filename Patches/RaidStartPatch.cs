@@ -71,14 +71,19 @@ namespace hazelify.UnlockedEntries.Patches
 
                 string successMessage = $"Profile Id did not exist, but entry did; saving profile Id into file for all locations. An exfil will be required to update data";
 
-                if (!currentLoc.StartsWith("factory4"))
-                {
-                    Plugin.playerManager.SetPlayerData(currentLoc, currentPlayerPosition, currentPlayerRotation);
-                }
-                else
+                if (currentLoc.StartsWith("factory4"))
                 {
                     Plugin.playerManager.SetPlayerData("factory4_day", currentPlayerPosition, currentPlayerRotation);
                     Plugin.playerManager.SetPlayerData("factory4_night", currentPlayerPosition, currentPlayerRotation);
+                }
+                else if (currentLoc.StartsWith("sandbox"))
+                {
+                    Plugin.playerManager.SetPlayerData("sandbox", currentPlayerPosition, currentPlayerRotation);
+                    Plugin.playerManager.SetPlayerData("sandbox_high", currentPlayerPosition, currentPlayerRotation);
+                }
+                else
+                {
+                    Plugin.playerManager.SetPlayerData(currentLoc, currentPlayerPosition, currentPlayerRotation);
                 }
 
                 Plugin.logIssue(successMessage, false);

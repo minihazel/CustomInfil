@@ -93,14 +93,19 @@ namespace hazelify.UnlockedEntries.Patches
                 if (!Plugin.playerManager.DoesPlayerDataExist(currentLoc))
                     Plugin.logIssue("LocalRaidEndedPatch -> `PlayerData` has no entry for location " + currentLoc + ", creating one", false);
 
-                if (!currentLoc.ToLower().StartsWith("factory4"))
-                {
-                    Plugin.playerManager.SetPlayerData(currentLoc, currentPlayerPosition, currentPlayerRotation);
-                }
-                else
+                if (currentLoc.StartsWith("factory4"))
                 {
                     Plugin.playerManager.SetPlayerData("factory4_day", currentPlayerPosition, currentPlayerRotation);
                     Plugin.playerManager.SetPlayerData("factory4_night", currentPlayerPosition, currentPlayerRotation);
+                }
+                else if (currentLoc.StartsWith("sandbox"))
+                {
+                    Plugin.playerManager.SetPlayerData("sandbox", currentPlayerPosition, currentPlayerRotation);
+                    Plugin.playerManager.SetPlayerData("sandbox_high", currentPlayerPosition, currentPlayerRotation);
+                }
+                else
+                {
+                    Plugin.playerManager.SetPlayerData(currentLoc, currentPlayerPosition, currentPlayerRotation);
                 }
 
                 Plugin.logIssue(successMessage, false);
