@@ -407,7 +407,6 @@ namespace hazelify.UnlockedEntries.Patches
 
             try
             {
-                Plugin.hasSpawned = true;
                 player.Teleport(coords, true);
             }
             catch (Exception ex)
