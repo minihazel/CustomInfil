@@ -1,17 +1,13 @@
 ﻿using EFT;
 using HarmonyLib;
 using SPT.Reflection.Patching;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Fika.Core.Coop.GameMode;
 using hazelify.UnlockedEntries.Data;
 using UnlockedEntries;
 using UnityEngine;
 using Comfort.Common;
+using Fika.Core.Coop.Players;
 
 namespace hazelify.UnlockedEntries.Patches
 {
@@ -23,7 +19,7 @@ namespace hazelify.UnlockedEntries.Patches
         }
 
         [PatchPrefix]
-        private void PatchPrefix(ref Player __instance)
+        private void PatchPrefix(ref CoopPlayer __instance)
         {
             if (__instance == null) return;
             var gameWorld = Singleton<GameWorld>.Instance;
@@ -40,7 +36,7 @@ namespace hazelify.UnlockedEntries.Patches
 
             if (existingPlayerData == null)
             {
-                Plugin.logIssue("LocalRaidEndedPatch -> `existingPlayerData` is null", false);
+                Plugin.logIssue("FikaLocalRaidEndedPatch -> `existingPlayerData` is null", false);
                 return;
             }
 
@@ -49,12 +45,12 @@ namespace hazelify.UnlockedEntries.Patches
 
             if (player == null)
             {
-                Plugin.logIssue("LocalRaidEndedPatch -> Player is null", false);
+                Plugin.logIssue("FikaLocalRaidEndedPatch -> Player is null", false);
                 return;
             }
             if (currentLoc == null)
             {
-                Plugin.logIssue("LocalRaidEndedPatch -> currentLoc is null", false);
+                Plugin.logIssue("FikaLocalRaidEndedPatch -> currentLoc is null", false);
                 return;
             }
 
@@ -68,7 +64,7 @@ namespace hazelify.UnlockedEntries.Patches
             Vector3 currentPlayerPosition = new Vector3(currentPlayerX, currentPlayerY, currentPlayerZ);
             if (currentPlayerPosition == null)
             {
-                Plugin.logIssue("LocalRaidEndedPatch -> currentPlayerPosition is null", false);
+                Plugin.logIssue("FikaLocalRaidEndedPatch -> currentPlayerPosition is null", false);
                 return;
             }
 
@@ -79,7 +75,7 @@ namespace hazelify.UnlockedEntries.Patches
 
             if (currentPlayerRotation == null)
             {
-                Plugin.logIssue("LocalRaidEndedPatch -> currentPlayerRotation is null", false);
+                Plugin.logIssue("FikaLocalRaidEndedPatch -> currentPlayerRotation is null", false);
                 return;
             }
 

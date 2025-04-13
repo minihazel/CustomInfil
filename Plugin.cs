@@ -112,7 +112,6 @@ public class Plugin : BaseUnityPlugin
         playerManager = new MapPlayerManager();
         playerDataDictionary = MapPlayerManager.LoadPlayerData(playerDataFile);
 
-
         if (isFikaInstalled)
         {
             new FikaLocalRaidEndedPatch().Enable();
