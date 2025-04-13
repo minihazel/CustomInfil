@@ -19,7 +19,7 @@ namespace hazelify.UnlockedEntries.Patches
         }
 
         [PatchPrefix]
-        private void PatchPrefix(ref CoopPlayer __instance)
+        private static void PatchPrefix(ref CoopPlayer __instance)
         {
             if (__instance == null) return;
             var gameWorld = Singleton<GameWorld>.Instance;
