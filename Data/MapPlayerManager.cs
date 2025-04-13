@@ -20,7 +20,7 @@ namespace hazelify.UnlockedEntries.Data
             return null;
         }
 
-        public void SetPlayerData(string profileId, string mapName, Vector3 position, Vector2 rotation)
+        public void SetPlayerData(string mapName, Vector3 position, Vector2 rotation)
         {
             float positionX = position.x;
             float positionY = position.y;
@@ -29,7 +29,7 @@ namespace hazelify.UnlockedEntries.Data
             float rotationX = rotation.x;
             float rotationY = rotation.y;
 
-            var playerData = new PlayerData(profileId, positionX, positionY, positionZ, rotationX, rotationY);
+            var playerData = new PlayerData(positionX, positionY, positionZ, rotationX, rotationY);
             Plugin.playerDataDictionary[mapName] = playerData;
             SavePlayerData(Plugin.playerDataDictionary);
         }
@@ -64,16 +64,16 @@ namespace hazelify.UnlockedEntries.Data
 
             Dictionary<string, PlayerData> newPlayerData = new Dictionary<string, PlayerData>
             {
-                {"factory4_day", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
-                {"factory4_night", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
-                {"bigmap", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
-                {"sandbox", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
-                {"rezervbase", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
-                {"shoreline", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
-                {"interchange", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
-                {"laboratory", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
-                {"tarkovstreets", new PlayerData("Unassigned", 0, 0, 0, 0, 0)},
-                {"lighthouse", new PlayerData("Unassigned", 0, 0, 0, 0, 0)}
+                {"factory4_day", new PlayerData(0, 0, 0, 0, 0)},
+                {"factory4_night", new PlayerData(0, 0, 0, 0, 0)},
+                {"bigmap", new PlayerData(0, 0, 0, 0, 0)},
+                {"sandbox", new PlayerData(0, 0, 0, 0, 0)},
+                {"rezervbase", new PlayerData(0, 0, 0, 0, 0)},
+                {"shoreline", new PlayerData(0, 0, 0, 0, 0)},
+                {"interchange", new PlayerData(0, 0, 0, 0, 0)},
+                {"laboratory", new PlayerData(0, 0, 0, 0, 0)},
+                {"tarkovstreets", new PlayerData(0, 0, 0, 0, 0)},
+                {"lighthouse", new PlayerData(0, 0, 0, 0, 0)}
             };
 
             string json = JsonConvert.SerializeObject(newPlayerData, jsonSettings);

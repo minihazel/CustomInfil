@@ -6,6 +6,8 @@ using EFT.InventoryLogic;
 using EFT.UI;
 using hazelify.UnlockedEntries.Data;
 using hazelify.UnlockedEntries.Patches;
+using hazelify.UnlockedEntries.Patches.DebugPatches;
+using hazelify.UnlockedEntries.Patches.PhysicsTriggers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -17,14 +19,19 @@ using static EFT.SpeedTree.TreeWind;
 
 namespace UnlockedEntries;
 
-[BepInPlugin("hazelify.UnlockedEntries", "UnlockedEntries", "1.0.0")]
+[BepInPlugin("hazelify.UnlockedEntries", "UnlockedEntries", "1.0.3")]
 [BepInDependency("Jehree.HomeComforts", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("com.fika.core", BepInDependency.DependencyFlags.SoftDependency)]
 public class Plugin : BaseUnityPlugin
 {
     internal static new ManualLogSource Logger;
     public static string currentEnv = Environment.CurrentDirectory; // main SPT dir
     public static bool isLITInstalled { get; private set; } // check if LIT is installed
     public static string LITmod = "Jehree.HomeComforts";
+
+    public static bool isFikaInstalled { get; private set; } // check if Fika is installed
+    public static string Fikamod = "com.fika.core";
+
     // ..\..\..\BepInEx\plugins\hazelify.UnlockedEntries\
     // $(ProjectDir)\Build\hazelify.UnlockedEntries\
 
@@ -80,6 +87,10 @@ public class Plugin : BaseUnityPlugin
     public static JObject playerDataObj = null;
 
     // config options
+    public static ConfigEntry<bool> debug_exfildumper;
+    public static ConfigEntry<bool> debug_spawndumper;
+
+    // config options
     public static ConfigEntry<string> usedExfil;
     public static ConfigEntry<bool> useLastExfil;
     public static ConfigEntry<bool> chooseInfil;
@@ -89,6 +100,7 @@ public class Plugin : BaseUnityPlugin
     private void Awake()
     {
         isLITInstalled = Chainloader.PluginInfos.ContainsKey(LITmod);
+        isFikaInstalled = Chainloader.PluginInfos.ContainsKey(Fikamod);
 
         Logger = base.Logger;
         Logger.LogInfo($"hazelify.UnlockedEntries has loaded!");
@@ -100,9 +112,21 @@ public class Plugin : BaseUnityPlugin
         playerManager = new MapPlayerManager();
         playerDataDictionary = MapPlayerManager.LoadPlayerData(playerDataFile);
 
+        if (isFikaInstalled)
+        {
+            new FikaLocalRaidEndedPatch().Enable();
+        }
+        else
+        {
+            new LocalRaidEndedPatch().Enable();
+        }
+
         new RaidStartPatch().Enable();
         new LocalRaidEndedPatch().Enable();
-        new OnPlayerExit().Enable();
+        new OnTriggerEnterPatch().Enable();
+        new OnTriggerExitPatch().Enable();
+        new ExfilDumper().Enable();
+        new SpawnpointDumper().Enable();
 
         if (isLITInstalled)
         {
@@ -114,6 +138,23 @@ public class Plugin : BaseUnityPlugin
                 true,
                 "All this means is that toggling \"Spawn into your last exfil\" will do nothing, you will always spawn at your HomeComforts safehouse.");
         }
+
+        debug_exfildumper = Config.Bind(
+            "2. Core",
+            "A. Dump Map Exfils",
+            false,
+            new ConfigDescription("Debug option: If you wish to dump all the exfiltration zones from the map you enter next. This option will disable itself once you spawn in.\n\n" +
+            "Dumped info will be saved into: hazelify.UnlockedEntries\\debug_exfils.json",
+                null,
+                new ConfigurationManagerAttributes { IsAdvanced = true }));
+        debug_spawndumper = Config.Bind(
+            "2. Core",
+            "B. Dump Map Spawns",
+            false,
+            new ConfigDescription("Debug option: If you wish to dump all the spawnpoints from the map you enter next. This option will disable itself once you spawn in.\n\n" +
+            "Dumped info will be saved into: hazelify.UnlockedEntries\\spawnpoints.json",
+                null,
+                new ConfigurationManagerAttributes { IsAdvanced = true }));
 
         useLastExfil = Config.Bind(
             "2. Core",
@@ -390,17 +431,21 @@ public class Plugin : BaseUnityPlugin
         }
     }
 
-    public void readSpawnpointsFile()
+    public static void readSpawnpointsFile()
     {
         spawnpointsFile = Path.Combine(currentEnv, "BepInEx", "plugins", "hazelify.UnlockedEntries", "spawnpoints.json");
         if (spawnpointsFile == null)
         {
+            File.Create(spawnpointsFile).Close();
+            File.WriteAllText(spawnpointsFile, "{}");
             Logger.LogInfo("`spawnpointsFile` is null");
         }
         else
         {
             if (!File.Exists(spawnpointsFile))
             {
+                File.Create(spawnpointsFile).Close();
+                File.WriteAllText(spawnpointsFile, "{}");
                 Logger.LogInfo("`spawnpointsFile` does not exist");
             }
             else
@@ -507,8 +552,6 @@ public class Plugin : BaseUnityPlugin
 
     public static void logIssue(string message, bool logOnConsole)
     {
-        message = "[UnlockedEntries] " + message;
-
         if (logOnConsole)
         {
             Logger.LogError(message);

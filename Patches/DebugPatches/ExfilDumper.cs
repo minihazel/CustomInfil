@@ -14,7 +14,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace hazelify.UnlockedEntries.Patches
+namespace hazelify.UnlockedEntries.Patches.DebugPatches
 {
     public class ExfilDumper : ModulePatch
     {

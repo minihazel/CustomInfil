@@ -1,25 +1,25 @@
-﻿using Comfort.Common;
-using UnlockedEntries;
-using EFT;
+﻿using EFT;
 using HarmonyLib;
-using hazelify.UnlockedEntries.Data;
 using SPT.Reflection.Patching;
 using System.Reflection;
-using Vector2 = UnityEngine.Vector2;
-using Vector3 = UnityEngine.Vector3;
-using EFT.UI;
+using Fika.Core.Coop.GameMode;
+using hazelify.UnlockedEntries.Data;
+using UnlockedEntries;
+using UnityEngine;
+using Comfort.Common;
+using Fika.Core.Coop.Players;
 
 namespace hazelify.UnlockedEntries.Patches
 {
-    public class LocalRaidEndedPatch : ModulePatch
+    public class FikaLocalRaidEndedPatch : ModulePatch
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(Player), nameof(Player.OnDestroy));
+            return AccessTools.Method(typeof(CoopGame), nameof(CoopGame.Extract));
         }
 
         [PatchPrefix]
-        private static void PatchPrefix(ref Player __instance)
+        private static void PatchPrefix(ref CoopPlayer __instance)
         {
             if (__instance == null) return;
             var gameWorld = Singleton<GameWorld>.Instance;
@@ -36,7 +36,7 @@ namespace hazelify.UnlockedEntries.Patches
 
             if (existingPlayerData == null)
             {
-                Plugin.logIssue("LocalRaidEndedPatch -> `existingPlayerData` is null", false);
+                Plugin.logIssue("FikaLocalRaidEndedPatch -> `existingPlayerData` is null", false);
                 return;
             }
 
@@ -44,19 +44,19 @@ namespace hazelify.UnlockedEntries.Patches
 
             if (player == null)
             {
-                Plugin.logIssue("LocalRaidEndedPatch -> Player is null", false);
+                Plugin.logIssue("FikaLocalRaidEndedPatch -> Player is null", false);
                 player = __instance;
 
                 if (player == null)
                 {
-                    Plugin.logIssue("LocalRaidEndedPatch -> Player (AllAlivePlayersList) is null", false);
+                    Plugin.logIssue("FikaLocalRaidEndedPatch -> Player (__instance) is null", false);
                     return;
                 }
+                return;
             }
-
             if (currentLoc == null)
             {
-                Plugin.logIssue("LocalRaidEndedPatch -> currentLoc is null", false);
+                Plugin.logIssue("FikaLocalRaidEndedPatch -> currentLoc is null", false);
                 return;
             }
 
@@ -70,7 +70,7 @@ namespace hazelify.UnlockedEntries.Patches
             Vector3 currentPlayerPosition = new Vector3(currentPlayerX, currentPlayerY, currentPlayerZ);
             if (currentPlayerPosition == null)
             {
-                Plugin.logIssue("LocalRaidEndedPatch -> currentPlayerPosition is null", false);
+                Plugin.logIssue("FikaLocalRaidEndedPatch -> currentPlayerPosition is null", false);
                 return;
             }
 
@@ -81,7 +81,7 @@ namespace hazelify.UnlockedEntries.Patches
 
             if (currentPlayerRotation == null)
             {
-                Plugin.logIssue("LocalRaidEndedPatch -> currentPlayerRotation is null", false);
+                Plugin.logIssue("FikaLocalRaidEndedPatch -> currentPlayerRotation is null", false);
                 return;
             }
 
@@ -91,14 +91,14 @@ namespace hazelify.UnlockedEntries.Patches
                 string successMessage = $"Set player data of {player.ProfileId} to position {currentPlayerPosition} and rotation {currentPlayerRotation} on map " + currentLoc;
 
                 if (!Plugin.playerManager.DoesPlayerDataExist(currentLoc))
-                    Plugin.logIssue("LocalRaidEndedPatch -> `PlayerData` has no entry for location " + currentLoc + ", creating one", false);
+                    Plugin.logIssue("FikaLocalRaidEndedPatch -> `PlayerData` has no entry for location " + currentLoc + ", creating one", false);
 
-                if (currentLoc.StartsWith("factory4"))
+                if (currentLoc.ToLower().StartsWith("factory4"))
                 {
                     Plugin.playerManager.SetPlayerData("factory4_day", currentPlayerPosition, currentPlayerRotation);
                     Plugin.playerManager.SetPlayerData("factory4_night", currentPlayerPosition, currentPlayerRotation);
                 }
-                else if (currentLoc.StartsWith("sandbox"))
+                else if (currentLoc.ToLower().StartsWith("sandbox"))
                 {
                     Plugin.playerManager.SetPlayerData("sandbox", currentPlayerPosition, currentPlayerRotation);
                     Plugin.playerManager.SetPlayerData("sandbox_high", currentPlayerPosition, currentPlayerRotation);
@@ -110,8 +110,6 @@ namespace hazelify.UnlockedEntries.Patches
 
                 Plugin.logIssue(successMessage, false);
             }
-
-            Plugin.hasSpawned = true;
         }
     }
 }

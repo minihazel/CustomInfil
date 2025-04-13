@@ -46,8 +46,11 @@
     <Reference Include="ConfigurationManager">
       <HintPath>C:\Users\hazelify\Desktop\General\SPT\3.10 Assemblies\ConfigurationManager.dll</HintPath>
     </Reference>
+    <Reference Include="Fika.Core">
+      <HintPath>C:\Users\hazelify\Desktop\General\SPT\3.10 Assemblies\Fika.Core.dll</HintPath>
+    </Reference>
     <Reference Include="netstandard">
-      <HintPath>..\..\..\EscapeFromTarkov_Data\Managed\netstandard.dll</HintPath>
+      <HintPath>C:\Users\hazelify\Desktop\General\SPT\3.10 Assemblies\netstandard.dll</HintPath>
     </Reference>
     <Reference Include="Sirenix.Serialization">
       <HintPath>C:\Users\hazelify\Desktop\General\SPT\3.10 Assemblies\Sirenix.Serialization.dll</HintPath>
