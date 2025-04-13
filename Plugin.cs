@@ -20,7 +20,7 @@ using static EFT.SpeedTree.TreeWind;
 
 namespace UnlockedEntries;
 
-[BepInPlugin("hazelify.UnlockedEntries", "UnlockedEntries", "1.0.0")]
+[BepInPlugin("hazelify.UnlockedEntries", "UnlockedEntries", "1.0.3")]
 [BepInDependency("Jehree.HomeComforts", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.fika.core", BepInDependency.DependencyFlags.SoftDependency)]
 public class Plugin : BaseUnityPlugin
