@@ -11,7 +11,8 @@ namespace hazelify.UnlockedEntries.Data
             "Gate 3",
             "Gate 0",
             "Gate m",
-            "Gate_o"
+            "Gate_o",
+            "factory_secret_ark"
         };
         public static List<string> factory4_day_scav = new List<string>
         {
@@ -30,7 +31,8 @@ namespace hazelify.UnlockedEntries.Data
             "Gate 3",
             "Gate 0",
             "Gate m",
-            "Gate_o"
+            "Gate_o",
+            "factory_secret_ark"
         };
         public static List<string> factory4_night_scav = new List<string>
         {
@@ -51,7 +53,9 @@ namespace hazelify.UnlockedEntries.Data
             "Crossroads",
             "Old Gas Station",
             "Trailer Park",
-            "RUAF Roadblock"
+            "RUAF Roadblock",
+            "customs_secret_voron_boat",
+            "customs_secret_voron_bunker"
         };
         public static List<string> bigmap_scav = new List<string>
         {
@@ -80,7 +84,8 @@ namespace hazelify.UnlockedEntries.Data
             "Unity_free_exit",
             "Scav_coop_exit",
             "Nakatani_stairs_free_exit",
-            "sniper_exit"
+            "sniper_exit",
+            "groundzero_secret_adaptation"
         };
         public static List<string> sandbox_scav = new List<string>
         {
@@ -95,7 +100,8 @@ namespace hazelify.UnlockedEntries.Data
             "Unity_free_exit",
             "Scav_coop_exit",
             "Nakatani_stairs_free_exit",
-            "sniper_exit"
+            "sniper_exit",
+            "groundzero_secret_adaptation"
         };
         public static List<string> sandbox_high_scav = new List<string>
         {
@@ -111,7 +117,8 @@ namespace hazelify.UnlockedEntries.Data
             "EXFIL_Bunker",
             "Alpinist",
             "EXFIL_ScavCooperation",
-            "EXFIL_vent"
+            "EXFIL_vent",
+            "reserve_secret_minefield"
         };
         public static List<string> rezervbase_scav = new List<string>
         {
@@ -130,7 +137,8 @@ namespace hazelify.UnlockedEntries.Data
             "Shorl_free",
             "Nothern_Checkpoint",
             "Coastal_South_Road",
-            "EXFIL_Train"
+            "EXFIL_Train",
+            "lighthouse_secret_minefield"
         };
         public static List<string> lighthouse_scav = new List<string>
         {
@@ -151,7 +159,7 @@ namespace hazelify.UnlockedEntries.Data
             "Lighthouse_pass",
             "Pier Boat",
             "RedRebel_alp",
-            "↓ SCAV EXFILS ↓"
+            "shoreline_secret_heartbeat"
         };
         public static List<string> shoreline_scav = new List<string>
         {
@@ -172,7 +180,8 @@ namespace hazelify.UnlockedEntries.Data
             "UN Roadblock",
             "RUAF Roadblock",
             "South V-Ex",
-            "Outskirts"
+            "Outskirts",
+            "woods_secret_minefield"
         };
         public static List<string> woods_scav = new List<string>
         {
@@ -211,7 +220,8 @@ namespace hazelify.UnlockedEntries.Data
             "E5",
             "E6",
             "E9_sniper",
-            "E7"
+            "E7",
+            "streets_secret_onyx"
         };
         public static List<string> tarkovstreets_scav = new List<string>
         {

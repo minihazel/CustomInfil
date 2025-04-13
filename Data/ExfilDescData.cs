@@ -11,7 +11,8 @@ namespace hazelify.UnlockedEntries.Data
             "Gate 3",
             "Gate 0",
             "Med Tent Gate",
-            "Courtyard Gate"
+            "Courtyard Gate",
+            "Smugglers' Passage"
         };
         public static List<string> factory4_day_scav = new List<string>
         {
@@ -30,7 +31,8 @@ namespace hazelify.UnlockedEntries.Data
             "Gate 3",
             "Gate 0",
             "Med Tent Gate",
-            "Courtyard Gate"
+            "Courtyard Gate",
+            "Smugglers' Passage"
         };
         public static List<string> factory4_night_scav = new List<string>
         {
@@ -51,9 +53,10 @@ namespace hazelify.UnlockedEntries.Data
             "Crossroads",
             "Old Gas Station",
             "Trailer Park",
-            "RUAF Roadblock"
+            "RUAF Roadblock",
+            "Smugglers' Boat",
+            "Smugglers' Bunker (ZB-1012)"
         };
-
         public static List<string> bigmap_scav = new List<string>
         {
             "Military Base CP",
@@ -81,7 +84,8 @@ namespace hazelify.UnlockedEntries.Data
             "Emercom Checkpoint",
             "Scav Checkpoint (Co-op)",
             "Nakatani Basement Stairs",
-            "Mira Ave (Flare)"
+            "Mira Ave (Flare)",
+            "Tartowers Sales Office"
         };
         public static List<string> sandbox_scav = new List<string>
         {
@@ -96,7 +100,8 @@ namespace hazelify.UnlockedEntries.Data
             "Emercom Checkpoint",
             "Scav Checkpoint (Co-op)",
             "Nakatani Basement Stairs",
-            "Mira Ave (Flare)"
+            "Mira Ave (Flare)",
+            "Tartowers Sales Office"
         };
         public static List<string> sandbox_high_scav = new List<string>
         {
@@ -112,7 +117,8 @@ namespace hazelify.UnlockedEntries.Data
             "Bunker Hermetic Door",
             "Cliff Descent",
             "Scav Lands (Co-Op)",
-            "Sewer Manhole"
+            "Sewer Manhole",
+            "Exit to Woods"
         };
         public static List<string> rezervbase_scav = new List<string>
         {
@@ -130,7 +136,8 @@ namespace hazelify.UnlockedEntries.Data
             "Mountain Pass",
             "Path to Shoreline",
             "Northern Checkpoint",
-            "Southern Road"
+            "Southern Road",
+            "Passage by the Lake"
         };
         public static List<string> lighthouse_scav = new List<string>
         {
@@ -150,7 +157,8 @@ namespace hazelify.UnlockedEntries.Data
             "Tunnel",
             "Path to Lighthouse",
             "Pier Boat",
-            "Climber's Trail"
+            "Climber's Trail",
+            "Mountain Bunker"
         };
         public static List<string> shoreline_scav = new List<string>
         {
@@ -171,7 +179,8 @@ namespace hazelify.UnlockedEntries.Data
             "UN Roadblock",
             "RUAF Roadblock",
             "Bridge V-Ex",
-            "Outskirts"
+            "Outskirts",
+            "Railway Bridge to Tarkov"
         };
         public static List<string> woods_scav = new List<string>
         {
@@ -210,7 +219,8 @@ namespace hazelify.UnlockedEntries.Data
             "Collapsed Crane",
             "Scav Checkpoint",
             "Klimov Street (Flare)",
-            "Expo Checkpoint"
+            "Expo Checkpoint",
+            "Smugglers' Basement"
         };
         public static List<string> tarkovstreets_scav = new List<string>
         {
