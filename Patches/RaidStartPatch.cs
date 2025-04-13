@@ -34,7 +34,6 @@ namespace hazelify.UnlockedEntries.Patches
         [PatchPostfix]
         private static void PatchPostfix(ref GameWorld __instance)
         {
-            bool areCoordinatesEmpty = false;
             if (Plugin.debug_exfildumper.Value || Plugin.debug_spawndumper.Value)
             {
                 Plugin.logIssue("One or more debug options are enabled, disabling core patch modifications", false);
@@ -70,24 +69,31 @@ namespace hazelify.UnlockedEntries.Patches
                 Vector3 currentPlayerPosition = new Vector3(0, 0, 0);
                 Vector2 currentPlayerRotation = new Vector2(0, 0);
 
-                string successMessage = $"Profile Id did not exist, but entry did; saving profile Id into file for all locations";
+                string successMessage = $"Profile Id did not exist, but entry did; saving profile Id into file for all locations. An exfil will be required to update data";
 
                 if (!currentLoc.StartsWith("factory4"))
                 {
-                    Plugin.playerManager.SetPlayerData(player.ProfileId, currentLoc, currentPlayerPosition, currentPlayerRotation);
+                    Plugin.playerManager.SetPlayerData(currentLoc, currentPlayerPosition, currentPlayerRotation);
                 }
                 else
                 {
-                    Plugin.playerManager.SetPlayerData(player.ProfileId, "factory4_day", currentPlayerPosition, currentPlayerRotation);
-                    Plugin.playerManager.SetPlayerData(player.ProfileId, "factory4_night", currentPlayerPosition, currentPlayerRotation);
+                    Plugin.playerManager.SetPlayerData("factory4_day", currentPlayerPosition, currentPlayerRotation);
+                    Plugin.playerManager.SetPlayerData("factory4_night", currentPlayerPosition, currentPlayerRotation);
                 }
 
                 Plugin.logIssue(successMessage, false);
-                areCoordinatesEmpty = true;
             }
 
-            if (Plugin.useLastExfil.Value && !areCoordinatesEmpty)
+            if (Plugin.useLastExfil.Value)
             {
+                if (existingPlayerData.Position_X == 0 &&
+                existingPlayerData.Position_Y == 0 &&
+                existingPlayerData.Position_Z == 0)
+                {
+                    Plugin.logIssue($"RaidStartPatch -> `existingPlayerData` isn\'t null, but entry contains default values; aborting", false);
+                    return;
+                }
+
                 if (Plugin.isLITInstalled)
                 {
                     return;

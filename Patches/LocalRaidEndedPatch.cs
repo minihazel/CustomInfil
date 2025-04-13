@@ -41,13 +41,19 @@ namespace hazelify.UnlockedEntries.Patches
             }
 
             Player player = gameWorld.MainPlayer;
-            string pId = existingPlayerData.ProfileId;
 
             if (player == null)
             {
                 Plugin.logIssue("LocalRaidEndedPatch -> Player is null", false);
-                return;
+                player = __instance;
+
+                if (player == null)
+                {
+                    Plugin.logIssue("LocalRaidEndedPatch -> Player (AllAlivePlayersList) is null", false);
+                    return;
+                }
             }
+
             if (currentLoc == null)
             {
                 Plugin.logIssue("LocalRaidEndedPatch -> currentLoc is null", false);
@@ -89,12 +95,12 @@ namespace hazelify.UnlockedEntries.Patches
 
                 if (!currentLoc.ToLower().StartsWith("factory4"))
                 {
-                    Plugin.playerManager.SetPlayerData(pId, currentLoc, currentPlayerPosition, currentPlayerRotation);
+                    Plugin.playerManager.SetPlayerData(currentLoc, currentPlayerPosition, currentPlayerRotation);
                 }
                 else
                 {
-                    Plugin.playerManager.SetPlayerData(pId, "factory4_day", currentPlayerPosition, currentPlayerRotation);
-                    Plugin.playerManager.SetPlayerData(pId, "factory4_night", currentPlayerPosition, currentPlayerRotation);
+                    Plugin.playerManager.SetPlayerData("factory4_day", currentPlayerPosition, currentPlayerRotation);
+                    Plugin.playerManager.SetPlayerData("factory4_night", currentPlayerPosition, currentPlayerRotation);
                 }
 
                 Plugin.logIssue(successMessage, false);

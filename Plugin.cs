@@ -551,8 +551,6 @@ public class Plugin : BaseUnityPlugin
 
     public static void logIssue(string message, bool logOnConsole)
     {
-        message = "[UnlockedEntries] " + message;
-
         if (logOnConsole)
         {
             Logger.LogError(message);
