@@ -28,6 +28,11 @@ namespace hazelify.UnlockedEntries.Patches.DebugPatches
         [PatchPostfix]
         private static void PatchPostfix(ref GameWorld __instance)
         {
+            if (!Plugin.debug_exfildumper.Value)
+            {
+                return;
+            }
+
             if (__instance == null) return;
             GameWorld gameWorld = Singleton<GameWorld>.Instance;
             Player player = gameWorld.MainPlayer;
