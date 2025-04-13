@@ -6,6 +6,9 @@ using EFT.InventoryLogic;
 using EFT.UI;
 using hazelify.UnlockedEntries.Data;
 using hazelify.UnlockedEntries.Patches;
+using hazelify.UnlockedEntries.Patches.DebugPatches;
+using hazelify.UnlockedEntries.Patches.DebugPatches;
+using hazelify.UnlockedEntries.Patches.PhysicsTriggers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -19,12 +22,17 @@ namespace UnlockedEntries;
 
 [BepInPlugin("hazelify.UnlockedEntries", "UnlockedEntries", "1.0.0")]
 [BepInDependency("Jehree.HomeComforts", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("com.fika.core", BepInDependency.DependencyFlags.SoftDependency)]
 public class Plugin : BaseUnityPlugin
 {
     internal static new ManualLogSource Logger;
     public static string currentEnv = Environment.CurrentDirectory; // main SPT dir
     public static bool isLITInstalled { get; private set; } // check if LIT is installed
     public static string LITmod = "Jehree.HomeComforts";
+
+    public static bool isFikaInstalled { get; private set; } // check if Fika is installed
+    public static string Fikamod = "com.fika.core";
+
     // ..\..\..\BepInEx\plugins\hazelify.UnlockedEntries\
     // $(ProjectDir)\Build\hazelify.UnlockedEntries\
 
@@ -92,6 +100,7 @@ public class Plugin : BaseUnityPlugin
     private void Awake()
     {
         isLITInstalled = Chainloader.PluginInfos.ContainsKey(LITmod);
+        isFikaInstalled = Chainloader.PluginInfos.ContainsKey(Fikamod);
 
         Logger = base.Logger;
         Logger.LogInfo($"hazelify.UnlockedEntries has loaded!");
@@ -103,9 +112,19 @@ public class Plugin : BaseUnityPlugin
         playerManager = new MapPlayerManager();
         playerDataDictionary = MapPlayerManager.LoadPlayerData(playerDataFile);
 
+
+        if (isFikaInstalled)
+        {
+            new FikaLocalRaidEndedPatch().Enable();
+        }
+        else
+        {
+            new LocalRaidEndedPatch().Enable();
+        }
+
         new RaidStartPatch().Enable();
-        new LocalRaidEndedPatch().Enable();
-        new OnPlayerExit().Enable();
+        new OnTriggerEnterPatch().Enable();
+        new OnTriggerExitPatch().Enable();
         new ExfilDumper().Enable();
         new SpawnpointDumper().Enable();
 

@@ -71,7 +71,7 @@ namespace hazelify.UnlockedEntries.Patches
             string pId = existingPlayerData.ProfileId;
             foreach (Player registeredPlayer in gameWorld.RegisteredPlayers)
             {
-                if (registeredPlayer.ProfileId == pId && !registeredPlayer.Profile.Nickname.ToLower().StartsWith("headless_"))
+                if (registeredPlayer.ProfileId == pId)
                 {
                     if (Plugin.useLastExfil.Value)
                     {

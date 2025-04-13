@@ -10,11 +10,11 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace hazelify.UnlockedEntries.Patches
+namespace hazelify.UnlockedEntries.Patches.DebugPatches
 {
     public class TeleportPatch : ModulePatch
     {
-        public GameWorld gameWorld {  get; set; }
+        public GameWorld gameWorld { get; set; }
         public Player _player = null;
         public Player Player
         {

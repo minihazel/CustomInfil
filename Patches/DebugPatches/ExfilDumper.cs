@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using EFT.Game.Spawning;
 using System.IO.Compression;
 
-namespace hazelify.UnlockedEntries.Patches
+namespace hazelify.UnlockedEntries.Patches.DebugPatches
 {
     public class ExfilDumper : ModulePatch
     {

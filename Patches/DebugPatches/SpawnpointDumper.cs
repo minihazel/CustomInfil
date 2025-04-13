@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnlockedEntries;
 
-namespace hazelify.UnlockedEntries.Patches
+namespace hazelify.UnlockedEntries.Patches.DebugPatches
 {
     public class SpawnpointDumper : ModulePatch
     {
@@ -51,14 +51,14 @@ namespace hazelify.UnlockedEntries.Patches
             {
                 Plugin.logIssue("SpawnpointDumper -> " + location + " does not exist in file, creating it", true);
                 locArray = new JArray();
-                contentObj[location] = (JArray)locArray as JArray;
+                contentObj[location] = locArray as JArray;
                 return;
             }
 
             foreach (var v in _spawnPointMarkers)
             {
                 if (v == null) continue;
-                int pointId = (int)v.SpawnPoint.CorePointId;
+                int pointId = v.SpawnPoint.CorePointId;
                 string _Name = v.SpawnPoint.Name.ToString();
                 float rotationX = v.SpawnPoint.Rotation.x;
                 float rotationY = v.SpawnPoint.Rotation.y;

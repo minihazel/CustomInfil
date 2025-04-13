@@ -1,34 +1,29 @@
-﻿using Comfort.Common;
-using UnlockedEntries;
-using EFT;
-using EFT.Interactive;
-using EFT.UI.BattleTimer;
+﻿using EFT;
 using HarmonyLib;
-using hazelify.UnlockedEntries.Data;
 using SPT.Reflection.Patching;
 using System;
-using System.Globalization;
+using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Reflection;
-using System.Timers;
+using System.Text;
+using System.Threading.Tasks;
+using Fika.Core.Coop.GameMode;
+using hazelify.UnlockedEntries.Data;
+using UnlockedEntries;
 using UnityEngine;
-using UnityEngine.Pool;
-using Vector2 = UnityEngine.Vector2;
-using Vector3 = UnityEngine.Vector3;
-using EFT.UI;
+using Comfort.Common;
 
 namespace hazelify.UnlockedEntries.Patches
 {
-    public class LocalRaidEndedPatch : ModulePatch
+    public class FikaLocalRaidEndedPatch : ModulePatch
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(Player), nameof(Player.OnDestroy));
+            return AccessTools.Method(typeof(CoopGame), nameof(CoopGame.Extract));
         }
-        
+
         [PatchPrefix]
-        private static void PatchPrefix(ref Player __instance)
+        private void PatchPrefix(ref Player __instance)
         {
             if (__instance == null) return;
             var gameWorld = Singleton<GameWorld>.Instance;
@@ -94,7 +89,7 @@ namespace hazelify.UnlockedEntries.Patches
                 string successMessage = $"Set player data of {player.ProfileId} to position {currentPlayerPosition} and rotation {currentPlayerRotation} on map " + currentLoc;
 
                 if (!Plugin.playerManager.DoesPlayerDataExist(currentLoc))
-                    Plugin.logIssue("LocalRaidEndedPatch -> `PlayerData` has no entry for location " + currentLoc + ", creating one", false);
+                    Plugin.logIssue("FikaLocalRaidEndedPatch -> `PlayerData` has no entry for location " + currentLoc + ", creating one", false);
 
                 if (!currentLoc.ToLower().StartsWith("factory4"))
                 {
@@ -108,8 +103,6 @@ namespace hazelify.UnlockedEntries.Patches
 
                 Plugin.logIssue(successMessage, false);
             }
-
-            Plugin.hasSpawned = true;
         }
     }
 }

@@ -46,6 +46,9 @@
     <Reference Include="ConfigurationManager">
       <HintPath>..\..\..\BepInEx\plugins\spt\ConfigurationManager.dll</HintPath>
     </Reference>
+    <Reference Include="Fika.Core">
+      <HintPath>C:\Users\hazelify\Desktop\General\SPT\3.11 Assemblies\Fika.Core.dll</HintPath>
+    </Reference>
     <Reference Include="netstandard">
       <HintPath>..\..\..\EscapeFromTarkov_Data\Managed\netstandard.dll</HintPath>
     </Reference>
