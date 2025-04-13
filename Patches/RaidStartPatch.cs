@@ -118,8 +118,8 @@ namespace hazelify.UnlockedEntries.Patches
                 Plugin.hasSpawned = true;
                 ExfiltrationControllerClass.Instance.BannedPlayers.Add(player.Id);
 
-                player.Teleport(existingPos, true);
                 player.Rotation = existingRot;
+                player.Teleport(existingPos, true);
                 Plugin.logIssue("Teleported player to last known position: " + existingPos.ToString() + " with rotation " + existingRot.ToString(), false);
             };
             if (!Plugin.chooseInfil.Value)

@@ -34,6 +34,7 @@ namespace hazelify.UnlockedEntries.Patches.PhysicsTriggers
 
             Player playerByCollider = gameWorld.GetPlayerByCollider(col);
 
+            /*
             if (Plugin.hasSpawned)
             {
                 if (playerByCollider == gameWorld.MainPlayer)
@@ -41,6 +42,7 @@ namespace hazelify.UnlockedEntries.Patches.PhysicsTriggers
                     ExfiltrationControllerClass.Instance.BannedPlayers.Add(playerByCollider.Id);
                 }
             }
+            */
         }
     }
 }
