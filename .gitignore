@@ -361,6 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/Build/BepInEx/plugins/hazelify.UnlockedEntries
+/Build/BepInEx/plugins/hazelify.EntryPointSelector
 /Build
-/3.10 Build/hazelify.UnlockedEntries
+/3.10 Build/hazelify.EntryPointSelector

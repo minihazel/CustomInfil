@@ -1,15 +1,15 @@
 ﻿using Comfort.Common;
-using UnlockedEntries;
+using EntryPointSelector;
 using EFT;
 using HarmonyLib;
-using hazelify.UnlockedEntries.Data;
+using hazelify.EntryPointSelector.Data;
 using SPT.Reflection.Patching;
 using System.Reflection;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 using EFT.UI;
 
-namespace hazelify.UnlockedEntries.Patches
+namespace hazelify.EntryPointSelector.Patches
 {
     public class LocalRaidEndedPatch : ModulePatch
     {

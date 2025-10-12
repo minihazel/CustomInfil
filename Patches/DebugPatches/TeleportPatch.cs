@@ -1,7 +1,7 @@
 ﻿using Comfort.Common;
 using EFT;
 using HarmonyLib;
-using UnlockedEntries;
+using EntryPointSelector;
 using SPT.Reflection.Patching;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace hazelify.UnlockedEntries.Patches.DebugPatches
+namespace hazelify.EntryPointSelector.Patches.DebugPatches
 {
     public class TeleportPatch : ModulePatch
     {

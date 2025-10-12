@@ -2,14 +2,14 @@
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using System.Reflection;
-using Fika.Core.Coop.GameMode;
-using hazelify.UnlockedEntries.Data;
-using UnlockedEntries;
+using hazelify.EntryPointSelector.Data;
+using EntryPointSelector;
 using UnityEngine;
 using Comfort.Common;
-using Fika.Core.Coop.Players;
+using Fika.Core.Main.GameMode;
+using Fika.Core.Main.Players;
 
-namespace hazelify.UnlockedEntries.Patches
+namespace hazelify.EntryPointSelector.Patches
 {
     public class FikaLocalRaidEndedPatch : ModulePatch
     {
@@ -19,7 +19,7 @@ namespace hazelify.UnlockedEntries.Patches
         }
 
         [PatchPrefix]
-        private static void PatchPrefix(ref CoopPlayer __instance)
+        private static void PatchPrefix(ref FikaPlayer __instance)
         {
             if (__instance == null) return;
             var gameWorld = Singleton<GameWorld>.Instance;

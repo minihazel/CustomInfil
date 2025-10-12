@@ -2,25 +2,21 @@
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
-using EFT.InventoryLogic;
 using EFT.UI;
-using hazelify.UnlockedEntries.Data;
-using hazelify.UnlockedEntries.Patches;
-using hazelify.UnlockedEntries.Patches.DebugPatches;
-using hazelify.UnlockedEntries.Patches.DebugPatches;
-using hazelify.UnlockedEntries.Patches.PhysicsTriggers;
+using hazelify.EntryPointSelector.Data;
+using hazelify.EntryPointSelector.Patches;
+using hazelify.EntryPointSelector.Patches.DebugPatches;
+using hazelify.EntryPointSelector.Patches.PhysicsTriggers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Security;
-using static EFT.SpeedTree.TreeWind;
 
-namespace UnlockedEntries;
+namespace EntryPointSelector;
 
-[BepInPlugin("hazelify.UnlockedEntries", "UnlockedEntries", "1.0.4")]
+[BepInPlugin("hazelify.EntryPointSelector", "EntryPointSelector", "1.0.5")]
 [BepInDependency("Jehree.HomeComforts", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.fika.core", BepInDependency.DependencyFlags.SoftDependency)]
 public class Plugin : BaseUnityPlugin
@@ -33,8 +29,8 @@ public class Plugin : BaseUnityPlugin
     public static bool isFikaInstalled { get; private set; } // check if Fika is installed
     public static string Fikamod = "com.fika.core";
 
-    // ..\..\..\BepInEx\plugins\hazelify.UnlockedEntries\
-    // $(ProjectDir)\Build\hazelify.UnlockedEntries\
+    // ..\..\..\BepInEx\plugins\hazelify.EntryPointSelector\
+    // $(ProjectDir)\Build\hazelify.EntryPointSelector\
 
     public static MapPlayerManager playerManager = null;
     public static Dictionary<string, PlayerData> playerDataDictionary = null;
@@ -103,7 +99,7 @@ public class Plugin : BaseUnityPlugin
         isFikaInstalled = Chainloader.PluginInfos.ContainsKey(Fikamod);
 
         Logger = base.Logger;
-        Logger.LogInfo($"hazelify.UnlockedEntries has loaded!");
+        Logger.LogInfo($"hazelify.EntryPointSelector has loaded!");
 
         readLocales();
         readPlayerDataFile();
@@ -143,7 +139,7 @@ public class Plugin : BaseUnityPlugin
             "A. Dump Map Exfils",
             false,
             new ConfigDescription("Debug option: If you wish to dump all the exfiltration zones from the map you enter next. This option will disable itself once you spawn in.\n\n" +
-            "Dumped info will be saved into: hazelify.UnlockedEntries\\debug_exfils.json",
+            "Dumped info will be saved into: hazelify.EntryPointSelector\\debug_exfils.json",
                 null,
                 new ConfigurationManagerAttributes { IsAdvanced = true }));
         debug_spawndumper = Config.Bind(
@@ -151,7 +147,7 @@ public class Plugin : BaseUnityPlugin
             "B. Dump Map Spawns",
             false,
             new ConfigDescription("Debug option: If you wish to dump all the spawnpoints from the map you enter next. This option will disable itself once you spawn in.\n\n" +
-            "Dumped info will be saved into: hazelify.UnlockedEntries\\spawnpoints.json",
+            "Dumped info will be saved into: hazelify.EntryPointSelector\\spawnpoints.json",
                 null,
                 new ConfigurationManagerAttributes { IsAdvanced = true }));
 
@@ -432,7 +428,7 @@ public class Plugin : BaseUnityPlugin
 
     public static void readSpawnpointsFile()
     {
-        spawnpointsFile = Path.Combine(currentEnv, "BepInEx", "plugins", "hazelify.UnlockedEntries", "spawnpoints.json");
+        spawnpointsFile = Path.Combine(currentEnv, "BepInEx", "plugins", "hazelify.EntryPointSelector", "spawnpoints.json");
         if (spawnpointsFile == null)
         {
             File.Create(spawnpointsFile).Close();
@@ -478,7 +474,7 @@ public class Plugin : BaseUnityPlugin
 
     public static void readPlayerDataFile()
     {
-        playerDataFile = Path.Combine(currentEnv, "BepInEx", "plugins", "hazelify.UnlockedEntries", "PlayerData.json");
+        playerDataFile = Path.Combine(currentEnv, "BepInEx", "plugins", "hazelify.EntryPointSelector", "PlayerData.json");
 
         if (playerDataFile == null)
         {

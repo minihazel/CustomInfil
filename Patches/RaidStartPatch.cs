@@ -3,7 +3,7 @@ using EFT;
 using EFT.Interactive;
 using EFT.UI;
 using HarmonyLib;
-using UnlockedEntries;
+using EntryPointSelector;
 using SPT.Reflection.Patching;
 using System;
 using System.Reflection;
@@ -19,10 +19,10 @@ using UnityEngine;
 using System.Numerics;
 using System.Collections.Generic;
 using BepInEx.Configuration;
-using hazelify.UnlockedEntries.Data;
+using hazelify.EntryPointSelector.Data;
 using System.Globalization;
 
-namespace hazelify.UnlockedEntries.Patches
+namespace hazelify.EntryPointSelector.Patches
 {
     public class RaidStartPatch : ModulePatch
     {
@@ -319,7 +319,7 @@ namespace hazelify.UnlockedEntries.Patches
 
                 if (currentMapExfils == null)
                 {
-                    Plugin.logIssue("[UnlockedEntries] `currentMapExfils` was null", false);
+                    Plugin.logIssue("[EntryPointSelector] `currentMapExfils` was null", false);
                     return;
                 }
 
@@ -367,7 +367,7 @@ namespace hazelify.UnlockedEntries.Patches
 
             if (closestSpawn == null)
             {
-                Plugin.logIssue("[UnlockedEntries] `ClosestSpawn` JObject was null", false);
+                Plugin.logIssue("[EntryPointSelector] `ClosestSpawn` JObject was null", false);
                 return;
             }
 
@@ -382,12 +382,12 @@ namespace hazelify.UnlockedEntries.Patches
 
             if (coords == null)
             {
-                Plugin.logIssue("[UnlockedEntries] Closest spawn coordinates were null", false);
+                Plugin.logIssue("[EntryPointSelector] Closest spawn coordinates were null", false);
                 return;
             }
             if (rotation == null)
             {
-                Plugin.logIssue("[UnlockedEntries] Closest spawn rotation was null", false);
+                Plugin.logIssue("[EntryPointSelector] Closest spawn rotation was null", false);
                 return;
             }
 
@@ -402,7 +402,7 @@ namespace hazelify.UnlockedEntries.Patches
             }
             catch (Exception ex)
             {
-                Plugin.logIssue("[UnlockedEntries] Player Rotation error: " + ex.Message.ToString(), false);
+                Plugin.logIssue("[EntryPointSelector] Player Rotation error: " + ex.Message.ToString(), false);
             }
 
             try
@@ -411,7 +411,7 @@ namespace hazelify.UnlockedEntries.Patches
             }
             catch (Exception ex)
             {
-                Plugin.logIssue("[UnlockedEntries] Player Teleport error: " + ex.Message.ToString(), false);
+                Plugin.logIssue("[EntryPointSelector] Player Teleport error: " + ex.Message.ToString(), false);
             }
         }
     }

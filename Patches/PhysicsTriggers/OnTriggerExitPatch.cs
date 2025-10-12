@@ -6,17 +6,17 @@ using SPT.Reflection.Patching;
 using System;
 using System.Reflection;
 using UnityEngine;
-using UnlockedEntries;
+using EntryPointSelector;
 
-namespace hazelify.UnlockedEntries.Patches.PhysicsTriggers
+namespace hazelify.EntryPointSelector.Patches.PhysicsTriggers
 {
     public class OnTriggerExitPatch : ModulePatch
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(ExfiltrationPoint), "IPhysicsTrigger.OnTriggerExit");
+            return AccessTools.Method(typeof(ExfiltrationPoint), nameof(ExfiltrationPoint.OnTriggerExit));
         }
-
+        // "IPhysicsTrigger.OnTriggerExit"
         [PatchPrefix]
         private static void PatchPrefix(Collider col)
         {

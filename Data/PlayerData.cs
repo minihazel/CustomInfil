@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using EFT;
 
-namespace hazelify.UnlockedEntries.Data
+namespace hazelify.EntryPointSelector.Data
 {
     public class PlayerData
     {

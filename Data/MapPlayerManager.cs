@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using EFT;
 using Newtonsoft.Json;
-using UnlockedEntries;
+using EntryPointSelector;
 using System.IO;
 
-namespace hazelify.UnlockedEntries.Data
+namespace hazelify.EntryPointSelector.Data
 {
     public class MapPlayerManager
     {

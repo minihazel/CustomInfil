@@ -6,7 +6,7 @@ using SPT.Reflection.Patching;
 using System.Reflection;
 using Vector3 = UnityEngine.Vector3;
 
-namespace hazelify.UnlockedEntries.Patches.DebugPatches
+namespace hazelify.EntryPointSelector.Patches.DebugPatches
 {
     public class ShowIntroPatch : ModulePatch
     {

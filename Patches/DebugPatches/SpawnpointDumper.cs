@@ -12,9 +12,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using UnlockedEntries;
+using EntryPointSelector;
 
-namespace hazelify.UnlockedEntries.Patches.DebugPatches
+namespace hazelify.EntryPointSelector.Patches.DebugPatches
 {
     public class SpawnpointDumper : ModulePatch
     {

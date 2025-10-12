@@ -1,5 +1,5 @@
 ﻿using Comfort.Common;
-using UnlockedEntries;
+using EntryPointSelector;
 using EFT;
 using EFT.Interactive;
 using EFT.UI;
@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using EFT.Game.Spawning;
 using System.IO.Compression;
 
-namespace hazelify.UnlockedEntries.Patches.DebugPatches
+namespace hazelify.EntryPointSelector.Patches.DebugPatches
 {
     public class ExfilDumper : ModulePatch
     {
@@ -37,7 +37,7 @@ namespace hazelify.UnlockedEntries.Patches.DebugPatches
             GameWorld gameWorld = Singleton<GameWorld>.Instance;
             Player player = gameWorld.MainPlayer;
             var exfilController = __instance.ExfiltrationController;
-            string mapFile = Path.Combine(Plugin.currentEnv, "BepInEx", "plugins", "hazelify.UnlockedEntries", "debug_exfils.json");
+            string mapFile = Path.Combine(Plugin.currentEnv, "BepInEx", "plugins", "hazelify.EntryPointSelector", "debug_exfils.json");
             string location = gameWorld.LocationId.ToString().ToLower();
 
             List<ExfiltrationPoint> points = [];

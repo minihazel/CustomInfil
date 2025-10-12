@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace hazelify.UnlockedEntries.Data
+namespace hazelify.EntryPointSelector.Data
 {
     public static class ExfilData
     {

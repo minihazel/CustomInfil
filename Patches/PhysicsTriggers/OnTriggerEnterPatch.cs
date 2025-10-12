@@ -4,18 +4,18 @@ using HarmonyLib;
 using SPT.Reflection.Patching;
 using System.Reflection;
 using UnityEngine;
-using UnlockedEntries;
+using EntryPointSelector;
 using Comfort.Common;
 
-namespace hazelify.UnlockedEntries.Patches.PhysicsTriggers
+namespace hazelify.EntryPointSelector.Patches.PhysicsTriggers
 {
     public class OnTriggerEnterPatch : ModulePatch
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(ExfiltrationPoint), "IPhysicsTrigger.OnTriggerEnter");
+            return AccessTools.Method(typeof(ExfiltrationPoint), nameof(ExfiltrationPoint.OnTriggerEnter));
         }
-
+        // "IPhysicsTrigger.OnTriggerEnter"
         [PatchPrefix]
         private static void PatchPrefix(Collider col)
         {
