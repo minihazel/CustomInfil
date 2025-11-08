@@ -14,7 +14,7 @@ namespace hazelify.EntryPointSelector.Patches.PhysicsTriggers
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(ExfiltrationPoint), nameof(ExfiltrationPoint.OnTriggerExit));
+            return AccessTools.Method(typeof(ExfiltrationPoint), "IPhysicsTrigger.OnTriggerExit");
         }
         // "IPhysicsTrigger.OnTriggerExit"
         [PatchPrefix]

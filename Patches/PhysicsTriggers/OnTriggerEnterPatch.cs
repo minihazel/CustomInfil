@@ -13,7 +13,7 @@ namespace hazelify.EntryPointSelector.Patches.PhysicsTriggers
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(ExfiltrationPoint), nameof(ExfiltrationPoint.OnTriggerEnter));
+            return AccessTools.Method(typeof(ExfiltrationPoint), "IPhysicsTrigger.OnTriggerEnter");
         }
         // "IPhysicsTrigger.OnTriggerEnter"
         [PatchPrefix]
