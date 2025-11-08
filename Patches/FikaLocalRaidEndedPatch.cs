@@ -6,8 +6,9 @@ using hazelify.EntryPointSelector.Data;
 using EntryPointSelector;
 using UnityEngine;
 using Comfort.Common;
-using Fika.Core.Main.GameMode;
-using Fika.Core.Main.Players;
+using Fika.Core.Coop.Players;
+using Fika.Core.Coop.GameMode;
+using FikaPlayer = Fika.Core.Coop.Players.CoopPlayer;
 
 namespace hazelify.EntryPointSelector.Patches
 {
