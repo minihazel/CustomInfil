@@ -44,6 +44,7 @@ namespace hazelify.EntryPointSelector.Patches
 
             if (__instance == null) return;
             Player player = __instance.MainPlayer;
+            if (player == null) return;
             GameWorld gameWorld = Singleton<GameWorld>.Instance;
 
             if (player == null) return;
@@ -62,77 +63,82 @@ namespace hazelify.EntryPointSelector.Patches
 
             PlayerData existingPlayerData = Plugin.playerManager.GetPlayerData(currentLoc);
 
-            if (existingPlayerData == null)
+            if (Plugin.useLastExfil.Value)
             {
-                Plugin.logIssue("LocalRaidEndedPatch -> `existingPlayerData` is null, creating an entry for player " + player.Profile.Nickname.ToString(), false);
-
-                Vector3 currentPlayerPosition = new Vector3(0, 0, 0);
-                Vector2 currentPlayerRotation = new Vector2(0, 0);
-
-                string successMessage = $"Profile Id did not exist, but entry did; saving profile Id into file for all locations. An exfil will be required to update data";
-
-                if (currentLoc.StartsWith("factory4"))
+                if (existingPlayerData != null)
                 {
-                    Plugin.playerManager.SetPlayerData("factory4_day", currentPlayerPosition, currentPlayerRotation);
-                    Plugin.playerManager.SetPlayerData("factory4_night", currentPlayerPosition, currentPlayerRotation);
-                }
-                else if (currentLoc.StartsWith("sandbox"))
-                {
-                    Plugin.playerManager.SetPlayerData("sandbox", currentPlayerPosition, currentPlayerRotation);
-                    Plugin.playerManager.SetPlayerData("sandbox_high", currentPlayerPosition, currentPlayerRotation);
+                    if (existingPlayerData.Position_X == 0 &&
+                        existingPlayerData.Position_Y == 0 &&
+                        existingPlayerData.Position_Z == 0)
+                    {
+                        Plugin.logIssue($"RaidStartPatch -> `existingPlayerData` isn\'t null, but entry contains default values; aborting", false);
+                        return;
+                    }
+
+                    if (Plugin.isLITInstalled)
+                    {
+                        return;
+                    }
+
+                    float existingPosX = existingPlayerData.Position_X;
+                    float existingPosY = existingPlayerData.Position_Y;
+                    float existingPosZ = existingPlayerData.Position_Z;
+
+                    float existingRotX = existingPlayerData.Rotation_X;
+                    float existingRotY = existingPlayerData.Rotation_Y;
+
+                    Vector3 existingPos = new Vector3(existingPosX, existingPosY, existingPosZ);
+                    Vector2 existingRot = new Vector2(existingRotX, existingRotY);
+
+                    if (existingPos == null)
+                    {
+                        Plugin.logIssue("RaidStartPatch -> PlayerData position is null", false);
+                        return;
+                    }
+
+                    if (existingRot == null)
+                    {
+                        Plugin.logIssue("RaidStartPatch -> PlayerData rotation is null", false);
+                        return;
+                    }
+
+                    Plugin.hasSpawned = true;
+                    ExfiltrationControllerClass.Instance.BannedPlayers.Add(player.Id);
+
+                    player.Rotation = existingRot;
+                    player.Teleport(existingPos, true);
+                    Plugin.logIssue("Teleported player to last known position: " + existingPos.ToString() + " with rotation " + existingRot.ToString(), false);
+                    return;
                 }
                 else
                 {
-                    Plugin.playerManager.SetPlayerData(currentLoc, currentPlayerPosition, currentPlayerRotation);
-                }
+                    Plugin.logIssue("LocalRaidEndedPatch -> `existingPlayerData` is null, creating an entry for player " + player.Profile.Nickname.ToString() + " and aborting operation. Should work fine next raid.", false);
 
-                Plugin.logIssue(successMessage, false);
-            }
+                    Vector3 currentPlayerPosition = new Vector3(0, 0, 0);
+                    Vector2 currentPlayerRotation = new Vector2(0, 0);
 
-            if (Plugin.useLastExfil.Value)
-            {
-                if (existingPlayerData.Position_X == 0 &&
-                existingPlayerData.Position_Y == 0 &&
-                existingPlayerData.Position_Z == 0)
-                {
-                    Plugin.logIssue($"RaidStartPatch -> `existingPlayerData` isn\'t null, but entry contains default values; aborting", false);
+                    string successMessage = $"Profile Id did not exist, but entry did; saving profile Id into file for all locations. An exfil will be required to update data";
+
+                    if (currentLoc.StartsWith("factory4"))
+                    {
+                        Plugin.playerManager.SetPlayerData("factory4_day", currentPlayerPosition, currentPlayerRotation);
+                        Plugin.playerManager.SetPlayerData("factory4_night", currentPlayerPosition, currentPlayerRotation);
+                    }
+                    else if (currentLoc.StartsWith("sandbox"))
+                    {
+                        Plugin.playerManager.SetPlayerData("sandbox", currentPlayerPosition, currentPlayerRotation);
+                        Plugin.playerManager.SetPlayerData("sandbox_high", currentPlayerPosition, currentPlayerRotation);
+                    }
+                    else
+                    {
+                        Plugin.playerManager.SetPlayerData(currentLoc, currentPlayerPosition, currentPlayerRotation);
+                    }
+
+                    Plugin.logIssue(successMessage, false);
                     return;
                 }
-
-                if (Plugin.isLITInstalled)
-                {
-                    return;
-                }
-
-                float existingPosX = existingPlayerData.Position_X;
-                float existingPosY = existingPlayerData.Position_Y;
-                float existingPosZ = existingPlayerData.Position_Z;
-
-                float existingRotX = existingPlayerData.Rotation_X;
-                float existingRotY = existingPlayerData.Rotation_Y;
-
-                Vector3 existingPos = new Vector3(existingPosX, existingPosY, existingPosZ);
-                Vector2 existingRot = new Vector2(existingRotX, existingRotY);
-
-                if (existingPos == null)
-                {
-                    Plugin.logIssue("RaidStartPatch -> PlayerData position is null", false);
-                    return;
-                }
-
-                if (existingRot == null)
-                {
-                    Plugin.logIssue("RaidStartPatch -> PlayerData rotation is null", false);
-                    return;
-                }
-
-                Plugin.hasSpawned = true;
-                ExfiltrationControllerClass.Instance.BannedPlayers.Add(player.Id);
-
-                player.Rotation = existingRot;
-                player.Teleport(existingPos, true);
-                Plugin.logIssue("Teleported player to last known position: " + existingPos.ToString() + " with rotation " + existingRot.ToString(), false);
             };
+
             if (!Plugin.chooseInfil.Value)
             {
                 Plugin.logIssue("RaidStartPatch -> `Choose Infil` disabled, skipping", false);
