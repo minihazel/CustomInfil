@@ -16,7 +16,7 @@ using System.Linq;
 
 namespace EntryPointSelector;
 
-[BepInPlugin("hazelify.EntryPointSelector", "EntryPointSelector", "1.0.5")]
+[BepInPlugin("hazelify.EntryPointSelector", "EntryPointSelector", "1.1.0")]
 [BepInDependency("Jehree.HomeComforts", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.fika.core", BepInDependency.DependencyFlags.SoftDependency)]
 public class Plugin : BaseUnityPlugin
